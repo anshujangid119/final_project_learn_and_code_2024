@@ -1,9 +1,10 @@
 import socket
+
 import json
-from client.user_entities.utils import send_message
+from user_entities.utils import send_message
 
 class User:
-    def __init__(self, username, password, host='127.0.0.1', port=9999):
+    def __init__(self, username, password, host='127.0.0.1', port=9997):
         self.username = username
         self.password = password
         self.host = host
@@ -37,3 +38,7 @@ class User:
 
     def perform_actions(self):
         raise NotImplementedError("Subclasses must implement this method")
+
+
+# a= User("admin","adminpass")
+# a.connect()

@@ -1,12 +1,12 @@
-from client.user_entities.user import User
-from client.user_entities.utils import send_message
-from client.user_entities.design_literals import admin_literal
+from user_entities.user import User
+from user_entities.utils import send_message
+from user_entities.design_literals import admin_literal
 
 class Admin(User):
     def perform_actions(self):
         while True:
             action = input(admin_literal)
-            if action == 'ADD_USER':
+            if action == '1':
                 new_username = input("New username: ")
                 new_password = input("New password: ")
                 new_role = input("New role (admin/chef/employee): ")
@@ -15,6 +15,35 @@ class Admin(User):
                     print(add_user_response)
                 except ValueError as e:
                     print(e)
+            elif action == '2':
+                meal_name = input("Enter Dish name: ")
+                meal_type = input("Enter Dish Type:  1. For Breakfast 2. For Lunch 3. For Dinner")
+                availability = input("is available yes/no")
+                if availability == "yes":
+                    availability = 1
+                else:
+                    availability = 0
+                if meal_type == '1':
+                    meal_type = "breakfast"
+                elif meal_type == '2':
+                    meal_type = "lunch"
+                else:
+                    meal_type = "dinner"
+                try:
+                    add_dish_response = send_message(self.client_socket, 'ADD_DISH', {'meal_name': meal_name, 'meal_type': meal_type, 'availability': availability})
+                    print(add_dish_response)
+                except ValueError as e:
+                    print(e)
+            elif action == '3':
+                try:
+                    view_meal = send_message(self.client_socket, 'VIEW_MEAL',{})
+                    print("view_meal")
+                    print(view_meal)
+                except ValueError as e:
+                    print(e)
+
+
+
             elif action == 'LOGOUT':
                 send_message(self.client_socket, 'LOGOUT', {})
                 break

@@ -5,7 +5,7 @@ class SentimentAnalyzer:
         self.sentiment_lexicon = {
             'good': 1, 'great': 2, 'excellent': 3, 'positive': 2, 'happy': 2,
             'fantastic': 3, 'amazing': 3, 'bad': -1, 'terrible': -2, 'awful': -3,
-            'negative': -2, 'sad': -2, 'horrible': -3, 'poor': -1, 'love': 3,
+            'negative': -2, 'sad': -2, 'horrible': -3, 'poor': -1, 'love': 3, 'loved':3,
             'like': 2, 'dislike': -2, 'hate': -3, 'wonderful': 3, 'best': 3,
             'worst': -3, 'superb': 3, 'mediocre': -1, 'horrendous': -3, 'enjoy': 2,
             'abysmal': -3, 'delightful': 3, 'disgusting': -3, 'joyful': 3, 'depressing': -3,

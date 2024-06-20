@@ -57,7 +57,7 @@ class ClientHandler(threading.Thread):
 
     def get_command_handler(self, user_role):
         if user_role == 'admin':
-            return AdminCommandHandler(self.client_socket, self.user_db)
+            return AdminCommandHandler(self.client_socket, self.user_db, self.dish_db)
         elif user_role == 'chef':
             return ChefCommandHandler(self.client_socket, self.dish_db)
         elif user_role == 'employee':

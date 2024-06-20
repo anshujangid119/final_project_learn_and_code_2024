@@ -1,4 +1,7 @@
 from user_entities.user import User
+import sys
+import getpass
+sys.path.append("..")
 from user_entities.admin import Admin
 from user_entities.chef import Chef
 from user_entities.employee import Employee
@@ -18,7 +21,7 @@ if __name__ == "__main__":
         chef = Chef(username, password)
         chef.client_socket = user.client_socket
         chef.perform_actions()
-
+    #
     elif role == 'employee':
         employee = Employee(username, password)
         employee.client_socket = user.client_socket
