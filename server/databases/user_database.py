@@ -4,7 +4,7 @@ import json
 # from databases.secret import secrets
 from databases import db_connection , db_cursor
 #
-# # user = base64.b64decode(secrets['user']).decode("utf-8")
+# # user_entities = base64.b64decode(secrets['user_entities']).decode("utf-8")
 # # password = base64.b64decode(secrets['password']).decode("utf-8")
 # decoded_json_str = base64.b64decode(secrets).decode('utf-8')
 # secret = json.loads(decoded_json_str)

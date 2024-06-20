@@ -16,3 +16,4 @@ def decode_and_parse_json(encoded_str):
 
 key = read_cred_file(path)
 secrets = decode_and_parse_json(key)
+
