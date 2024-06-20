@@ -41,7 +41,22 @@ class Admin(User):
                     print(view_meal)
                 except ValueError as e:
                     print(e)
+            if action == '4':
+                meal_id = int(input("Enter meal id "))
+                availability = int(input("Enter availability status"))
+                try:
+                    update_meal_response = send_message(self.client_socket, 'UPDATE_MEAL', {'meal_id': meal_id, 'availability': availability})
+                    print(update_meal_response)
+                except ValueError as e:
+                    print(e)
 
+            if action == '5':
+                meal_id = int(input("Enter meal id "))
+                try:
+                    delete_meal_response = send_message(self.client_socket, 'DELETE_MEAL', {'meal_id': meal_id})
+                    print(delete_meal_response)
+                except ValueError as e:
+                    print(e)
 
 
             elif action == 'LOGOUT':

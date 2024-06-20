@@ -20,9 +20,40 @@ class ChefCommandHandler:
                     break
                 elif parsed_message['command'] == 'ADD_DISH':
                     self.handle_add_dish(parsed_message)
+                elif parsed_message['command'] == 'VIEW_MEAL':
+                    self.handle_view_meal(parsed_message)
+                elif parsed_message['command'] == 'VIEW_AVAILABLE_MEAL':
+                    self.handle_view_meal_type(parsed_message)
+                elif parsed_message['command'] == 'ROLL_OUT':
+                    self.handle_roll_out_menu(parsed_message)
             except Exception as e:
                 print(f"Error: {e}")
                 break
+
+    def handle_roll_out_menu(self, message):
+        meal_ids = message['data']
+        if self.dish_db.add_roll_out_menu(meal_ids):
+            self.client_socket.send(self.create_message('ROLL_OUT_SUCCESSFUlly', 'menu roll out successfully').encode())
+
+    def handle_view_meal_type(self, message):
+        meal_type = message['data']
+        availability = meal_type['availability']
+        meal_list = self.dish_db.available_meal(availability)
+        response = {
+            'command': 'VIEW_AVAILABLE_MEAL',
+            'data': meal_list
+        }
+        json_response = json.dumps(response)
+        self.client_socket.send(json_response.encode())
+    def handle_view_meal(self, message):
+        print("inside handle_view_meal")
+        meal_list = self.dish_db.view_meal()
+        response = {
+            'command': 'VIEW_MEAL',
+            'data': meal_list
+        }
+        json_response = json.dumps(response)
+        self.client_socket.send(json_response.encode())
 
     def handle_add_dish(self, message):
         new_dish = message['data']

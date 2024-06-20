@@ -26,30 +26,25 @@ class AdminCommandHandler:
                 elif parsed_message['command'] == 'VIEW_MEAL':
                     print("inside view")
                     self.handle_view_meal(parsed_message)
+                elif parsed_message['command'] == 'UPDATE_MEAL':
+                    self.handle_update_meal(parsed_message)
             except Exception as e:
                 print(f"Error: {e}")
-                break
+
+
+    def handle_update_meal(self,message):
+        print("inside server handler")
+        meal = message['data']
+        print(meal)
+        if self.dish_db.update_meal(meal['meal_id'], meal['availability']):
+            self.client_socket.send(self.create_message('UPDATE_MEAL_SUCCESS', 'meal updated successdully').encode())
     def handle_view_meal(self,message):
-        # meal_list = self.dish_db.view_meal()
-        #
-        # if meal_list:
-        #     self.client_socket.send("Food Items:\n".encode())
-        #     for item in meal_list:
-        #         # print(f"Sending item: {item}")  # Debugging statement
-        #         self.client_socket.send(item.encode())
-        #         time.sleep(0.1)
-
         meal_list = self.dish_db.view_meal()
-
         response = {
             'command': 'VIEW_MEAL',
             'data': meal_list
         }
-
-        # Convert the response to JSON format
         json_response = json.dumps(response)
-
-        # Send the JSON response
         self.client_socket.send(json_response.encode())
     def handle_add_meal(self, message):
         new_meal = message['data']
