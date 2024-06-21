@@ -1,6 +1,7 @@
 import mysql.connector
 from datetime import date
 from databases import db_connection , db_cursor
+from sentiment.analyzer import SentimentAnalyzer
 class DishDatabase:
     def add_meal(self, name, type, availability):
         query = "INSERT INTO meal (name, meal_type, availability) VALUES (%s, %s , %s)"
@@ -82,6 +83,29 @@ class DishDatabase:
             db_cursor.execute(query, (meal_id,current_date))
             db_connection.commit()
         return True
+
+    def view_feedback_dishes(self):
+        query = "select  f.food_id , m.name from feedback_requests f join meal m on f.food_id = m.id where f.date = %s"
+        current_date = date.today()
+        db_cursor.execute(query,(current_date,))
+        result = db_cursor.fetchall()
+        return result
+
+    def add_receive_feedback(self, data):
+        sentiment = SentimentAnalyzer()
+        comment = data['comment']
+        score = sentiment.sentiment_score(comment)
+        meal_id = data['meal_id']
+        quantity = data['quantity']
+        quality = data['quality']
+        rating = data['rating']
+        value_for_money = data['value_for_money']
+        query = 'INSERT INTO FEEDBACK (food_id, rating,quality, quantity,value_for_money,comment,sentiment_score) values (%s, %s,%s, %s,%s, %s,%s)'
+        db_cursor.execute(query, (meal_id,rating,quality,quantity,value_for_money,comment,score))
+        db_connection.commit()
+        return True
+
+
 
 
 
