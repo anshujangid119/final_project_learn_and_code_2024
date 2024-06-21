@@ -12,15 +12,15 @@ chef_literal = '''
  Followings are the operations that you can perform
 1. View meals
 2. Rollout menu
-3. Logout
+3. Get Feedback
+4. Select meal from rollout for tomorrow
+5. Logout
 ---------------------> 
 '''
 
-
-chef_roll_out = '''
-     There are 3 types of Roll outs
-     1. For Breakfast
-     2. For Lunch
-     3. For Dinner
---------------------->
+employee_literal = '''
+1. view menu
+2. give vote for tomorrow menu
+3. give feedback
+4. logout
 '''

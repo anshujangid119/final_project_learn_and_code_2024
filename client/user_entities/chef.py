@@ -1,6 +1,6 @@
 from user_entities.user import User
 from user_entities.utils import send_message
-from user_entities.design_literals import chef_literal, chef_roll_out
+from user_entities.design_literals import chef_literal
 
 class Chef(User):
     def perform_actions(self):
@@ -25,6 +25,26 @@ class Chef(User):
                     roll_out_menu = send_message(self.client_socket, 'ROLL_OUT', {'meal_list': meal_list})
                     print(roll_out_menu)
 
+                except ValueError as e:
+                    print(e)
+
+            elif action == '3':
+                try:
+                    print("Followings are the meals that present in the database")
+                    meal_ids = input("Enter Ids that you want to get feedback").split(",")
+                    feedback_response = send_message(self.client_socket, 'RECIEVE_FEEDBACK', {'meal_ids': meal_ids})
+                    print(feedback_response)
+                except ValueError as e:
+                    print(e)
+
+            elif action == '4':
+                try:
+                    print("Followings are the meals with employee votes now you have to select for tomorrow")
+                    view_meal = send_message(self.client_socket, 'VIEW_USER_VOTES', {})
+                    print(view_meal)
+                    meal_ids = input("Enter Ids that you want to select for tomorrow").split(",")
+                    feedback_response = send_message(self.client_socket, 'NEXT_DAY_MEAL', {'meal_ids': meal_ids})
+                    print(feedback_response)
                 except ValueError as e:
                     print(e)
 

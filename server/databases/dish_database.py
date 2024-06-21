@@ -47,6 +47,48 @@ class DishDatabase:
             db_connection.commit()
         return True
 
+    def add_feedback_request(self, meals_ids):
+        list_id = meals_ids['meal_ids']
+        current_date = date.today()
+        for meal_id in list_id:
+            query = "INSERT INTO feedback_requests (food_id, date) VALUES (%s, %s)"
+            db_cursor.execute(query, (meal_id, current_date))
+            db_connection.commit()
+        return True
+
+    def view_user_vote(self):
+        query = "select * from dailymenu"
+        db_cursor.execute(query)
+        result = db_cursor.fetchall()
+        return result
+
+    def add_next_day_meal(self, meal_ids):
+        list_id = meal_ids['meal_ids']
+        for meal_id in list_id:
+            query = "update dailymenu set isselected = 1 where food_id = %s"
+            db_cursor.execute(query, (meal_id, ))
+            db_connection.commit()
+            return True
+
+    def vote_for_next_day(self,meal_ids ):
+        list_id = meal_ids['meal_ids']
+        current_date = date.today()
+        for meal_id in list_id:
+            query = """
+            UPDATE dailymenu
+            SET vote = vote + 1
+            WHERE food_id = %s AND date = %s
+            """
+            db_cursor.execute(query, (meal_id,current_date))
+            db_connection.commit()
+        return True
+
+
+
+
+
+
+
 
 
 

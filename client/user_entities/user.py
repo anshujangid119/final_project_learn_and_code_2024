@@ -1,10 +1,10 @@
 import socket
-
 import json
 from user_entities.utils import send_message
 
+
 class User:
-    def __init__(self, username, password, host='127.0.0.1', port=9997):
+    def __init__(self, username, password, host='127.0.0.1', port=9998):
         self.username = username
         self.password = password
         self.host = host

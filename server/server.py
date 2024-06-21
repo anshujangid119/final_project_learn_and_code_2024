@@ -22,7 +22,7 @@ class Server:
         server_socket.close()
         print("Closing server socket")
 if __name__ == "__main__":
-    server = Server('0.0.0.0', 9997)
+    server = Server('0.0.0.0', 9998)
     print(server)
     # server.close()
     server.start()
