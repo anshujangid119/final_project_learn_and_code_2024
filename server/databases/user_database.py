@@ -10,11 +10,12 @@ from databases import db_connection , db_cursor
 # secret = json.loads(decoded_json_str)
 class UserDatabase:
 
-    def get_user_role(self, username, password):
-        query = "SELECT role FROM users WHERE username = %s AND password = %s"
+    def get_user_details(self, username, password):
+        query = "SELECT role,id FROM users WHERE username = %s AND password = %s"
         db_cursor.execute(query, (username, password))
         result = db_cursor.fetchone()
-        return result[0] if result else None
+        # print(result)
+        return result if result else None
 
     def add_user(self, username, password, role):
         if self.get_user_role(username, password):

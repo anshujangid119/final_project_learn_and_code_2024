@@ -100,6 +100,8 @@ class DishDatabase:
 
     def add_receive_feedback(self, data):
         sentiment = SentimentAnalyzer()
+        user_id = data['user_id']
+        current_date = date.today()
         comment = data['comment']
         score = sentiment.sentiment_score(comment)
         meal_id = data['meal_id']
@@ -107,8 +109,8 @@ class DishDatabase:
         quality = data['quality']
         rating = data['rating']
         value_for_money = data['value_for_money']
-        query = 'INSERT INTO FEEDBACK (food_id, rating,quality, quantity,value_for_money,comment,sentiment_score) values (%s, %s,%s, %s,%s, %s,%s)'
-        db_cursor.execute(query, (meal_id,rating,quality,quantity,value_for_money,comment,score))
+        query = 'INSERT INTO FEEDBACK (date,user_id,food_id, rating,quality, quantity,value_for_money,comment,sentiment_score) values (%s, %s, %s, %s,%s, %s,%s, %s,%s)'
+        db_cursor.execute(query, (current_date, user_id, meal_id,rating,quality,quantity,value_for_money,comment,score))
         db_connection.commit()
         return True
 

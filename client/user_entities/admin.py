@@ -5,7 +5,9 @@ import os
 import time
 
 class Admin(User):
-    def perform_actions(self):
+    def perform_actions(self,user_id):
+        os.system('cls')
+        print(f"{'*' * 10} welcome {self.username} {'*' * 10}")
         while True:
             action = input(admin_literal)
             if action == '1':

@@ -17,6 +17,8 @@ class EmployeeCommandHandler:
                     continue
                 elif parsed_message['command'] == 'VIEW_USER_VOTES':
                     self.handle_view_user_vote(parsed_message)
+                elif parsed_message['command'] == 'VIEW_MEAL':
+                    self.handle_view_meal(parsed_message)
                 elif parsed_message['command'] == 'VOTE_FOR_NEXT_DAY':
                     self.handle_vote_for_next_day(parsed_message)
                 elif parsed_message['command'] == 'VIEW_FEEDBACK_DISHES':
@@ -29,6 +31,16 @@ class EmployeeCommandHandler:
                 print(f"Error: {e}")
                 break
 
+
+    def handle_view_meal(self,message):
+        availability = 1
+        meal_list = self.dish_db.available_meal(availability)
+        response = {
+            'command': 'VIEW_AVAILABLE_MEAL',
+            'data': meal_list
+        }
+        json_response = json.dumps(response)
+        self.client_socket.send(json_response.encode())
     def handle_receive_feedback(self, message):
         data = message['data']
         if self.dish_db.add_receive_feedback(data):

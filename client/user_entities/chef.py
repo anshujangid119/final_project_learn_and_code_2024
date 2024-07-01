@@ -5,7 +5,9 @@ import time
 import os
 
 class Chef(User):
-    def perform_actions(self):
+    def perform_actions(self,user_id):
+        os.system('cls')
+        print(f"{'*' * 10} welcome {self.username} {'*' * 10}")
         while True:
             action = input(chef_literal)
             if action == '1':

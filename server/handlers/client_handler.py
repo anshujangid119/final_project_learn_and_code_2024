@@ -32,15 +32,15 @@ class ClientHandler(threading.Thread):
         password = parsed_auth_message['data']['password']
         print(f"Authenticating user: {username}")
 
-        user_role = self.user_db.get_user_role(username, password)
-        if user_role:
-            self.client_socket.send(self.create_message('AUTH_SUCCESS', {'role': user_role}).encode())
+        user = self.user_db.get_user_details(username, password)
+        if user:
+            self.client_socket.send(self.create_message('AUTH_SUCCESS', {'role': user[0], 'id': user[1]}).encode())
         else:
             self.client_socket.send(self.create_message('AUTH_FAILURE', 'Invalid credentials').encode())
             self.client_socket.close()
             return
 
-        handler = self.get_command_handler(user_role)
+        handler = self.get_command_handler(user[0])
         handler.handle_commands()
 
         print(f"Connection from {self.client_address} closed")

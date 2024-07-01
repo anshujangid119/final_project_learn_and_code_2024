@@ -9,30 +9,35 @@ from user_entities.employee import Employee
 print("------------------------ welcome to Cafteria management-------------------------------------------")
 
 retries_count = 2
-def main():
+def main(role = None, user_id = None):
     global retries_count
     username = input("Enter your Username: ")
     password = input("Enter your Password: ")
-    user = User(username, password)
-    role = user.connect()
+    user_obj = User(username, password)
 
-    if role == 'admin':
-        admin = Admin(username, password)
-        admin.client_socket = user.client_socket
-        admin.perform_actions()
-        main()
+    user = user_obj.connect()
+    if user is not None:
+        role = user[0]
+        user_id = user[1]
 
-    elif role == 'chef':
-        chef = Chef(username, password)
-        chef.client_socket = user.client_socket
-        chef.perform_actions()
-        main()
+        if role == 'admin':
+            admin = Admin(username, password)
+            admin.client_socket = user_obj.client_socket
+            admin.perform_actions(user_id)
+            main()
+
+        elif role == 'chef':
+            chef = Chef(username, password)
+            chef.client_socket = user_obj.client_socket
+            chef.perform_actions(user_id)
+            main()
     #
-    elif role == 'employee':
-        employee = Employee(username, password)
-        employee.client_socket = user.client_socket
-        employee.perform_actions()
-        main()
+        elif role == 'employee':
+            employee = Employee(username, password)
+            employee.client_socket = user_obj.client_socket
+            employee.perform_actions(user_id)
+            main()
+
     else:
         if retries_count > 0:
             print(f"Please try again you have {retries_count} more attempt to login")

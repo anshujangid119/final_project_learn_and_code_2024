@@ -3,7 +3,7 @@ import json
 from user_entities.utils import send_message
 
 class User:
-    def __init__(self, username, password, host='127.0.0.1', port=9998):
+    def __init__(self, username, password, host='127.0.0.1', port=9998,):
         self.username = username
         self.password = password
         self.host = host
@@ -19,9 +19,11 @@ class User:
             auth_prompt = self.client_socket.recv(1024).decode()
             auth_response = send_message(self.client_socket, 'AUTH', {'username': self.username, 'password': self.password})
             if auth_response['command'] == 'AUTH_SUCCESS':
+                print(auth_response)
+                user_id = auth_response['data']['id']
                 role = auth_response['data']['role']
                 print(f"Logged in as {role}")
-                return role
+                return role,user_id
             else:
                 print("Authentication failed")
                 self.close()
