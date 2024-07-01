@@ -15,7 +15,14 @@ class DishDatabase:
         db_cursor.execute(query)
         result = db_cursor.fetchall()
         return result
-
+    def delete_meal(self,meal_id):
+        print(meal_id)
+        print(type(meal_id))
+        query = 'Delete from meal where id = %s'
+        db_cursor.execute(query, (meal_id,))
+        db_connection.commit()
+        print("Successfully")
+        return True
     def update_meal(self, meal_id, availability):
         print(type(meal_id))
         print(type(availability))

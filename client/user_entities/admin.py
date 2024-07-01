@@ -38,9 +38,11 @@ class Admin(User):
                     print(e)
             elif action == '3':
                 try:
-                    view_meal = send_message(self.client_socket, 'VIEW_MEAL',{})
-                    print("view_meal")
-                    print(view_meal)
+                    view_meal = send_message(self.client_socket, 'VIEW_MEAL', {})
+                    print(f"{'ID':<15} {'NAME':<15} {'MEAL TYPE':<15} {'AVAILABILITY':<15}")
+                    for i in view_meal['data']:
+                        availability = "Available" if i[3] == 1 else "Not Available"
+                        print(f"{i[0]:<15} {i[1]:<15} {i[2]:<15} {availability:<15}")
                 except ValueError as e:
                     print(e)
             if action == '4':
