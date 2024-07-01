@@ -24,5 +24,4 @@ class Server:
 if __name__ == "__main__":
     server = Server('0.0.0.0', 9998)
     print(server)
-    # server.close()
     server.start()

@@ -1,6 +1,8 @@
 from user_entities.user import User
 from user_entities.utils import send_message
 from user_entities.design_literals import admin_literal
+import os
+import time
 
 class Admin(User):
     def perform_actions(self):
@@ -12,7 +14,7 @@ class Admin(User):
                 new_role = input("New role (admin/chef/employee): ")
                 try:
                     add_user_response = send_message(self.client_socket, 'ADD_USER', {'username': new_username, 'password': new_password, 'role': new_role})
-                    print(add_user_response)
+                    print(add_user_response['data'])
                 except ValueError as e:
                     print(e)
             elif action == '2':
@@ -59,6 +61,10 @@ class Admin(User):
                     print(e)
 
 
-            elif action == 'LOGOUT':
-                send_message(self.client_socket, 'LOGOUT', {})
-                break
+            elif action == '6':
+                self.close()
+                time.sleep(2)
+                os.system('cls')
+                time.sleep(2)
+                print("Logout Successfully")
+                return

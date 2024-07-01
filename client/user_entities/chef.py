@@ -9,8 +9,10 @@ class Chef(User):
             if action == '1':
                 try:
                     view_meal = send_message(self.client_socket, 'VIEW_MEAL',{})
-                    print("view_meal")
-                    print(view_meal)
+                    print(f"{'NAME':<15} {'MEAL TYPE':<15} {'AVAILABILITY':<15}")
+                    for i in view_meal['data']:
+                        availability = "Available" if i[3] == 1 else "Not Available"
+                        print(f"{i[1]:<15} {i[2]:<15} {availability:<15}")
                 except ValueError as e:
                     print(e)
 

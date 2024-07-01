@@ -5,7 +5,7 @@ admin_literal = '''
 3. view meals
 4. Update meals
 5. Delete Meal
-5. Logout   
+6. Logout   
 ---------------------> '''
 
 chef_literal = '''

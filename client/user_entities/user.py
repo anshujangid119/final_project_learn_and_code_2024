@@ -2,7 +2,6 @@ import socket
 import json
 from user_entities.utils import send_message
 
-
 class User:
     def __init__(self, username, password, host='127.0.0.1', port=9998):
         self.username = username
@@ -13,32 +12,45 @@ class User:
         self.connected = False
 
     def connect(self):
-        if not self.connected:
-            self.client_socket.connect((self.host, self.port))
-            self.connected = True
-        auth_prompt = self.client_socket.recv(1024).decode()
-        print(auth_prompt)
-
-        auth_response = send_message(self.client_socket, 'AUTH', {'username': self.username, 'password': self.password})
-        print(auth_response)
-
-        if auth_response['command'] == 'AUTH_SUCCESS':
-            role = auth_response['data']['role']
-            print(f"Logged in as {role}")
-            return role
-        else:
-            print("Authentication failed")
+        try:
+            if not self.connected:
+                self.client_socket.connect((self.host, self.port))
+                self.connected = True
+            auth_prompt = self.client_socket.recv(1024).decode()
+            auth_response = send_message(self.client_socket, 'AUTH', {'username': self.username, 'password': self.password})
+            if auth_response['command'] == 'AUTH_SUCCESS':
+                role = auth_response['data']['role']
+                print(f"Logged in as {role}")
+                return role
+            else:
+                print("Authentication failed")
+                self.close()
+                return None
+        except socket.error as e:
+            print(f"Socket error: {e}")
+            self.close()
+            return None
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error: {e}")
+            self.close()
+            return None
+        except Exception as e:
+            print(f"Unexpected error: {e}")
             self.close()
             return None
 
     def close(self):
-        if self.connected:
+        try:
             self.client_socket.close()
             self.connected = False
+            print("logging out ......")
+        except socket.error as e:
+            print(f"Socket error during close: {e}")
+        except Exception as e:
+            print(f"Unexpected error during close: {e}")
 
     def perform_actions(self):
         raise NotImplementedError("Subclasses must implement this method")
-
 
 # a= User("admin","adminpass")
 # a.connect()
