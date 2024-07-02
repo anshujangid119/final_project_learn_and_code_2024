@@ -5,7 +5,7 @@ def send_message(sock, command, data):
     message = json.dumps({'command': command, 'data': data})
     sock.send(message.encode())
 
-    response = sock.recv(1024).decode()
+    response = sock.recv(8096).decode()
     if not response:
         raise ValueError("Received empty response from server")
 

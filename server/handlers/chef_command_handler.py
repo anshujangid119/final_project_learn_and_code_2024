@@ -1,14 +1,15 @@
 import json
-
+from recommendation_engine.recommendation import Recommendation
 class ChefCommandHandler:
-    def __init__(self, client_socket, dish_db):
+    def __init__(self, client_socket, dish_db, recomm_db):
         self.client_socket = client_socket
         self.dish_db = dish_db
+        self.recomm_db = recomm_db
 
     def handle_commands(self):
         while True:
             try:
-                message = self.client_socket.recv(1024).decode()
+                message = self.client_socket.recv(8096).decode()
                 if not message:
                     break
 
@@ -32,9 +33,25 @@ class ChefCommandHandler:
                     self.handle_view_user_vote(parsed_message)
                 elif parsed_message['command'] == 'NEXT_DAY_MEAL':
                     self.handle_next_day_meal(parsed_message)
+                elif parsed_message['command'] == 'RECOMMEND_MEAL':
+                    self.handle_recommend_meal(parsed_message)
             except Exception as e:
                 print(f"Error: {e}")
                 break
+
+
+    def handle_recommend_meal(self,message):
+        number_of_meals = message['data']['meal_number']
+        meal_list = self.recomm_db.get_recommendation_dataset()
+
+        print(meal_list)
+        response = {
+            'command': 'get_recommendation_dataset',
+            'data': meal_list
+        }
+        json_response = json.dumps(response)
+        self.client_socket.send(json_response.encode())
+
 
 
     def handle_next_day_meal(self, message):

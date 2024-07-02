@@ -65,8 +65,9 @@ class DishDatabase:
         return True
 
     def view_user_vote(self):
-        query = "select * from dailymenu"
-        db_cursor.execute(query)
+        current_date = date.today()
+        query = "select f.food_id , m.name , f.vote from dailymenu f join meal m on f.food_id = m.id where f.date = %s"
+        db_cursor.execute(query,(current_date,))
         result = db_cursor.fetchall()
         return result
 
@@ -78,8 +79,10 @@ class DishDatabase:
             db_connection.commit()
             return True
 
-    def vote_for_next_day(self,meal_ids ):
-        list_id = meal_ids['meal_ids']
+    def vote_for_next_day(self,data,):
+        list_id = data['meal_ids']
+        user_id = data['user_id']
+
         current_date = date.today()
         for meal_id in list_id:
             query = """
@@ -89,6 +92,9 @@ class DishDatabase:
             """
             db_cursor.execute(query, (meal_id,current_date))
             db_connection.commit()
+        query = "insert into vote_update(user_id, date_of_vote) values(%s, %s) "
+        db_cursor.execute(query, (user_id, current_date))
+        db_connection.commit()
         return True
 
     def view_feedback_dishes(self):
@@ -113,6 +119,16 @@ class DishDatabase:
         db_cursor.execute(query, (current_date, user_id, meal_id,rating,quality,quantity,value_for_money,comment,score))
         db_connection.commit()
         return True
+    def user_already_voted(self,message):
+        user_id = message['data']['user_id']
+        print("inside user already voted")
+        current_date = date.today()
+        query = "Select * from vote_update where user_id = %s and date_of_vote = %s"
+        db_cursor.execute(query, (user_id,current_date))
+        result = db_cursor.fetchall()
+        print(result)
+        return result
+
 
 
 

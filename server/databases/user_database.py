@@ -18,7 +18,7 @@ class UserDatabase:
         return result if result else None
 
     def add_user(self, username, password, role):
-        if self.get_user_role(username, password):
+        if self.get_user_details(username, password):
             return False
         query = "INSERT INTO users (username, password, role) VALUES (%s, %s, %s)"
         db_cursor.execute(query, (username, password, role))

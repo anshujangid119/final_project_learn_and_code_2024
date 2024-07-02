@@ -54,11 +54,18 @@ class EmployeeCommandHandler:
         }
         json_response = json.dumps(response)
         self.client_socket.send(json_response.encode())
+
+
     def handle_view_user_vote(self,message):
+        print(" inside emp handler")
         meal_list =  self.dish_db.view_user_vote()
+        print("meal list")
+        print(message)
+        is_voted = self.dish_db.user_already_voted(message)
+        converted_data = [(user_id, (date.year, date.month, date.day)) for user_id, date in is_voted]
         response = {
             'command': 'VIEW_USER_VOTES',
-            'data': meal_list
+            'data': (meal_list,converted_data)
         }
         json_response = json.dumps(response)
         self.client_socket.send(json_response.encode())

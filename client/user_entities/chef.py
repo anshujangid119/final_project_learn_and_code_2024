@@ -24,6 +24,9 @@ class Chef(User):
             elif action == '2':
                 try:
                     availability = 1
+                    meal_number = int(input("For Rollout Enter how many meal you want to get recommended by system"))
+                    recommended_meals = send_message(self.client_socket , 'RECOMMEND_MEAL', {'meal_number' : meal_number})
+                    print(recommended_meals)
                     view_meal = send_message(self.client_socket, 'VIEW_AVAILABLE_MEAL', {'availability': availability})
                     print("These are the total meals that are available for ")
                     print(f"{'ID':<15} {'NAME':<15} {'MEAL TYPE':<15} {'AVAILABILITY':<15}")
