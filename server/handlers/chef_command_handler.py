@@ -43,11 +43,13 @@ class ChefCommandHandler:
     def handle_recommend_meal(self,message):
         number_of_meals = message['data']['meal_number']
         meal_list = self.recomm_db.get_recommendation_dataset()
+        recomm_obj = Recommendation()
+        data = recomm_obj.get_top_meals(meal_list,number_of_meals)
 
         print(meal_list)
         response = {
             'command': 'get_recommendation_dataset',
-            'data': meal_list
+            'data': data
         }
         json_response = json.dumps(response)
         self.client_socket.send(json_response.encode())
