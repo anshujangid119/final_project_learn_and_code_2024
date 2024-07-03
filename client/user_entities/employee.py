@@ -20,8 +20,43 @@ class Employee(User):
             elif action == '4':
                 self.view_notification()
             elif action == '5':
+                self.view_discard_menu()
+            elif action == '6':
+                self.update_profile()
+            elif action == '7':
                 self.logout()
                 return
+
+    def update_profile(self):
+        response = send_message(self.client_socket, 'UPDATE_PROFILE', {})
+        print(response)
+    def view_discard_menu(self):
+        try:
+            response = send_message(self.client_socket, 'VIEW_DISCARD_MENU', {})
+            print(response['data'])
+            if len(response['data']) > 0:
+                discard_menu_id = input("enter id that you want to give feedback")
+                like_text = input("what you liked about this")
+                dislike_text = input("what you disliked about this")
+                recipe = input("give your home recepie for this")
+                feedback_response = send_message(
+                    self.client_socket,
+                    'DISCARD_ITEM_FEEDBACK',
+                    {
+                        'discard_menu_id': discard_menu_id,
+                        'like_text': like_text,
+                        'dislike_text': dislike_text,
+                        'recipe': recipe
+                    }
+                )
+                print(feedback_response)
+            else:
+                print("there is no item for feedback.")
+
+
+
+        except ValueError as e:
+            print(e)
 
     def view_meal(self):
         try:
@@ -53,7 +88,6 @@ class Employee(User):
     def view_feedback_dishes(self, user_id):
         try:
             response = send_message(self.client_socket, 'VIEW_FEEDBACK_DISHES', {})
-            print("inside")
             if len(response['data']) > 0:
                 feedback_data = input_handler.collect_feedback(response['data'])
                 feedback_response = send_message(

@@ -28,11 +28,30 @@ class EmployeeCommandHandler:
                     self.handle_view_feedback_dishes(parsed_message)
                 elif parsed_message['command'] == 'RECEIVE_FEEDBACK':
                     self.handle_receive_feedback(parsed_message)
+                elif parsed_message['command'] == 'VIEW_DISCARD_MENU':
+                    self.handle_view_discard_menu(parsed_message)
+                elif parsed_message['command'] == 'DISCARD_ITEM_FEEDBACK':
+                    self.handle_discard_item_feedback(parsed_message)
+                elif parsed_message['command'] == 'UPDATE_PROFILE':
+                    self.handle_update_profile(parsed_message)
                 elif parsed_message['command'] == 'LOGOUT':
                     break
             except Exception as e:
                 print(f"Error: {e}")
                 break
+    def handle_discard_item_feedback(self,message):
+        data = message['data']
+        if self.dish_db.add_discard_item_feedback(data):
+            self.client_socket.send(self.create_message('DISCARD_ITEM_FEEDBACK_SUCCESS', 'FEEDBACK ADDED SUCCESSFULLY').encode())
+
+    def handle_view_discard_menu(self, message):
+        menu = self.dish_db.view_discard_menu()
+        response = {
+            'command': 'VIEW_NOTIFICATION',
+            'data': menu
+        }
+        json_response = json.dumps(response)
+        self.client_socket.send(json_response.encode())
 
     def handle_view_notification(self,message):
         notifications = self.notification_db.view_notification()

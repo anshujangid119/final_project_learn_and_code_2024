@@ -3,6 +3,53 @@ from datetime import date
 from databases import db_connection , db_cursor
 from sentiment.analyzer import SentimentAnalyzer
 class DishDatabase:
+
+    def add_discard_item_feedback(self, data):
+        try:
+            query = '''
+            INSERT INTO discard_feedback (discard_menu_id, like_text, dislike_text, recipe) 
+            VALUES (%s, %s, %s, %s)
+            '''
+            db_cursor.execute(query, (data['discard_menu_id'], data['like_text'], data['dislike_text'], data['recipe']))
+            db_connection.commit()
+            print("Feedback added successfully.")
+            return True
+        except Exception as e:
+            print(f"Error: {e}")
+
+    def view_discard_menu(self):
+        query = '''
+        select * from discard_menu where is_discarded = true'''
+        db_cursor.execute(query)
+        result = db_cursor.fetchall()
+        return result
+
+    def get_discard_feedback(self):
+        query = '''
+        SELECT 
+            dm.id AS discard_menu_id,
+            dm.food_id,
+            m.name AS food_name,
+            dm.is_discarded,
+            df.like_text,
+            df.dislike_text,
+            df.recipe
+        FROM 
+            discard_menu dm
+        JOIN 
+            meal m ON dm.food_id = m.id
+        LEFT JOIN 
+            discard_feedback df ON dm.id = df.discard_menu_id'''
+        db_cursor.execute(query)
+        result = db_cursor.fetchall()
+        return result
+
+    def update_discard(self, id):
+        query = 'UPDATE discard_menu set is_discarded = true where food_id = %s'
+        db_cursor.execute(query, (id,))
+        db_connection.commit()
+        return True
+
     def add_meal(self, name, type, availability):
         query = "INSERT INTO meal (name, meal_type, availability) VALUES (%s, %s , %s)"
         db_cursor.execute(query, (name, type, availability))

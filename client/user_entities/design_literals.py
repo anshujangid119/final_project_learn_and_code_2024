@@ -14,7 +14,9 @@ chef_literal = '''
 2. Rollout menu
 3. Get Feedback
 4. Select meal from rollout for tomorrow
-5. Logout
+5. Generate discard menu
+6. view discard feedback
+7. logout
 ---------------------> 
 '''
 
@@ -23,5 +25,7 @@ employee_literal = '''
 2. give vote for tomorrow menu
 3. give feedback
 4. View Notifications
-4. logout
+5. View discard menu
+6. Update profile
+7. logout
 '''

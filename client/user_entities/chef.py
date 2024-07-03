@@ -20,8 +20,60 @@ class Chef(User):
             elif action == '4':
                 self.select_next_day_meals()
             elif action == '5':
+                self.generate_discard_menu()
+            elif action == '6':
+                self.get_discard_feedback()
+            elif action == '7':
                 self.logout()
                 return
+
+    def get_discard_feedback(self):
+        response = send_message(self.client_socket, 'GET_DISCARD_FEEDBACK', {})
+        print(response)
+    def generate_discard_menu(self):
+        response = send_message(self.client_socket, 'GENERATE_DISCARD_MENU', {})
+        discard_items = response['data']
+        self.display_discard_menu(discard_items)
+
+    def display_discard_menu(self, discard_items):
+        # Print discard menu items
+        print("Discard Menu Items:")
+        print(f"{'FOOD ID':<5} {'FOOD NAME':<30}")
+        menu_id_list = []
+        for item in discard_items:
+            menu_id_list.append(item[1])
+            print(f"{item[1]:<15} {item[2]:<30}")
+
+        while True:
+            print("\nOptions:")
+            print("1) Remove a Food Item from Menu List")
+            print("2) Get Detailed Feedback")
+
+            choice = input("Enter your choice (1 or 2): ").strip()
+            if choice == '1':
+                id = int(input("Enter ID of the food item you want to discard (one at a time): ").strip())
+                if id in menu_id_list:
+                    self.remove_food_item(id)
+                    break
+                else:
+                    print("Invalid ID. Please enter a valid food ID from the discard menu.")
+            elif choice == '2':
+                id = int(input("Enter ID of the food item for which you want detailed feedback: ").strip())
+                if id in menu_id_list:
+                    self.get_detailed_feedback(id)
+                    break
+                else:
+                    print("Invalid ID. Please enter a valid food ID from the discard menu.")
+            else:
+                print("Invalid choice. Please select 1 or 2.")
+
+    def remove_food_item(self, id):
+        response = send_message(self.client_socket, 'DELETE_MEAL', {'id':id})
+        print(response)
+
+    def get_detailed_feedback(self,id):
+        response = send_message(self.client_socket, 'GET_DETAILED_FEEDBACK', {'id': id})
+        print(response)
 
     def view_meal(self):
         try:

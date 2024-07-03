@@ -43,3 +43,48 @@ class RecommendationDatabase():
             serialized_result.append(serialized_row)
 
         return serialized_result
+
+    def get_discard_menu(self):
+        query = '''
+            INSERT IGNORE INTO discard_menu (food_id, food_name)
+            SELECT
+                food_id,
+                food_name
+            FROM (
+                WITH aggregated_data AS (
+                    SELECT
+                        m.id AS food_id,
+                        m.name AS food_name,
+                        AVG(f.rating) AS avg_rating,
+                        GROUP_CONCAT(LOWER(f.comment) SEPARATOR ', ') AS concatenated_comments
+                    FROM feedback f
+                    JOIN meal m ON f.food_id = m.id
+                    GROUP BY m.id, m.name
+                )
+                SELECT
+                    food_id,
+                    food_name
+                FROM aggregated_data
+                WHERE avg_rating < 2 AND (
+                    concatenated_comments LIKE '%bad%' OR 
+                    concatenated_comments LIKE '%tasteless%'
+                )
+            ) AS filtered_data;
+        '''
+        db_cursor.execute(query)
+        db_connection.commit()
+        data_fetch_query = 'select * from discard_menu'
+        db_cursor.execute(data_fetch_query)
+        result = db_cursor.fetchall()
+        return result
+        # serialized_result = []
+        # for row in result:
+        #     serialized_row = {
+        #         "id": row[0],
+        #         "food_id": row[1],
+        #         "food_name": row[2],
+        #         "is_discarded" : float(row[3]),
+        #         }
+        #     serialized_result.append(serialized_row)
+
+        return serialized_result

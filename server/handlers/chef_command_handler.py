@@ -1,5 +1,6 @@
 import json
 from recommendation_engine.recommendation import Recommendation
+from exception_handlers.custom_exception import DatabaseError, InvalidCommandError
 class ChefCommandHandler:
     def __init__(self, client_socket, dish_db, recomm_db, notification_db):
         self.client_socket = client_socket
@@ -34,9 +35,62 @@ class ChefCommandHandler:
                     self.handle_next_day_meal(parsed_message)
                 elif parsed_message['command'] == 'RECOMMEND_MEAL':
                     self.handle_recommend_meal(parsed_message)
+                elif parsed_message['command'] == 'GENERATE_DISCARD_MENU':
+                    self.handle_generate_discard_menu(parsed_message)
+                elif parsed_message['command'] == 'DELETE_MEAL':
+                    self.handle_delete_meal(parsed_message)
+                elif parsed_message['command'] == 'GET_DETAILED_FEEDBACK':
+                    self.handle_get_detailed_feedback(parsed_message)
+                elif parsed_message['command'] == 'GET_DISCARD_FEEDBACK':
+                    self.get_discard_feedback(parsed_message)
             except Exception as e:
                 print(f"Error: {e}")
                 break
+    def get_discard_feedback(self,message):
+        try:
+            data = self.dish_db.get_discard_feedback()
+            response = {
+                'command': 'generate_discard_menu',
+                'data': data
+            }
+            json_response = json.dumps(response)
+            self.client_socket.send(json_response.encode())
+        except Exception as e:
+            raise DatabaseError(f"Failed to delete meal: {e}")
+
+
+    def handle_get_detailed_feedback(self,message):
+        data = message['data']
+        try:
+            meal_name = self.dish_db.get_meal_name(data['id'])
+            if self.dish_db.update_discard(data['id']):
+                message = '[DISCARD_MENU]' + str(meal_name) + 'added to discard menu'
+                self.notification_db.update_notification(message)
+                self.client_socket.send(self.create_message('DISCARD_MENU_UPDATED', 'Discard menu updated successfully').encode())
+        except Exception as e:
+            raise DatabaseError(f"Failed to delete meal: {e}")
+
+
+    def handle_delete_meal(self,message):
+        data = message['data']
+        try:
+            meal_name = self.dish_db.get_meal_name(data['id'])
+            if self.dish_db.delete_meal(data['id']):
+                message = '[DISCARD_MENU]' + str(meal_name) + 'Deleted from the menu based on the discard list'
+                self.notification_db.update_notification(message)
+                self.client_socket.send(self.create_message('DELETED_SUCCESSFULLY', 'Meal deleted successfully').encode())
+        except Exception as e:
+            raise DatabaseError(f"Failed to delete meal: {e}")
+
+
+    def handle_generate_discard_menu(self,message):
+        data = self.recomm_db.get_discard_menu()
+        response = {
+            'command': 'generate_discard_menu',
+            'data': data
+        }
+        json_response = json.dumps(response)
+        self.client_socket.send(json_response.encode())
 
 
     def handle_recommend_meal(self,message):
