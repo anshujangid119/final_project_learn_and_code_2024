@@ -3,14 +3,30 @@ import re
 class SentimentAnalyzer:
     def __init__(self):
         self.sentiment_lexicon = {
-            'perfect': 3, 'good': 1, 'great': 2, 'excellent': 3, 'positive': 2, 'happy': 2,
-            'fantastic': 3, 'amazing': 3, 'bad': -1, 'terrible': -2, 'awful': -3,
-            'negative': -2, 'sad': -2, 'horrible': -3, 'poor': -1, 'love': 3, 'loved':3,
-            'like': 2, 'dislike': -2, 'hate': -3, 'wonderful': 3, 'best': 3,
-            'worst': -3, 'superb': 3, 'mediocre': -1, 'horrendous': -3, 'enjoy': 2,
-            'abysmal': -3, 'delightful': 3, 'disgusting': -3, 'joyful': 3, 'depressing': -3,
-            'satisfactory': 1, 'disappointing': -2, 'pleased': 2, 'upset': -2,
-            'thrilled': 3, 'angry': -3, 'content': 1, 'frustrated': -2
+            'delicious': 3, 'tasty': 2, 'savory': 2, 'flavorful': 2, 'bland': -1,
+            'spicy': 1, 'sweet': 2, 'sour': -1, 'bitter': -2, 'salty': -1,
+            'fresh': 2, 'stale': -2, 'juicy': 2, 'dry': -2, 'crispy': 2,
+            'soggy': -2, 'succulent': 3, 'delectable': 3, 'mouthwatering': 3,
+            'yummy': 2, 'unappetizing': -2, 'greasy': -1, 'burnt': -2,
+            'overcooked': -2, 'undercooked': -2, 'perfectly cooked': 3, 'raw': -2,
+            'heavenly': 3, 'inedible': -3, 'palatable': 1, 'scrumptious': 3,
+            'appetizing': 2, 'repulsive': -3, 'gross': -3, 'finger-licking': 2,
+            'hearty': 2, 'rich': 2, 'creamy': 2, 'buttery': 2, 'zesty': 2,
+            'smoky': 1, 'burned': -2, 'underdone': -2, 'overdone': -2, 'rubbery': -2,
+            'oily': -1, 'slimy': -2, 'fluffy': 2, 'dense': -1, 'light': 1,
+            'heavy': -1, 'melty': 2, 'chewy': -1, 'filling': 1, 'comforting': 2,
+            'divine': 3, 'unpalatable': -3, 'exquisite': 3, 'vile': -3,
+            'tasteless': -2, 'aromatic': 2, 'fragrant': 2, 'piquant': 2,
+            'mouth-watering': 3, 'lip-smacking': 2, 'nutritious': 2, 'nourishing': 2,
+            'refreshing': 2, 'tempting': 2, 'indulgent': 2, 'satisfying': 2,
+            'exquisite': 3, 'divine': 3, 'ambrosial': 3, 'displeasing': -2,
+            'inedible': -3, 'tender': 2, 'juicy': 2, 'succulent': 3, 'gamey': -1,
+            'rubbery': -2, 'tangy': 2, 'zingy': 2, 'heavenly': 3, 'unctuous': 1,
+            'unseasoned': -2, 'burnt': -2, 'overpowering': -1, 'watery': -1,
+            'gummy': -2, 'mushy': -1, 'chunky': 1, 'smooth': 2, 'velvety': 2,
+            'gritty': -2, 'cloying': -2, 'bittersweet': -1, 'rancid': -3,
+            'putrid': -3, 'overripe': -2, 'underripe': -2, 'ripe': 2, 'fizzy': 1,
+            'carbonated': 1, 'bubbly': 2, 'flat': -1, 'frothy': 1, 'effervescent': 2
         }
 
         self.negation_words = {'not', 'no', 'never', 'none'}

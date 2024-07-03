@@ -93,6 +93,6 @@ class Chef(User):
                 self.close()
                 time.sleep(2)
                 os.system('cls')
-                time.sleep(2)
+                time.sleep(1)
                 print("Logout Successfully")
                 return
