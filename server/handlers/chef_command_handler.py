@@ -1,10 +1,11 @@
 import json
 from recommendation_engine.recommendation import Recommendation
 class ChefCommandHandler:
-    def __init__(self, client_socket, dish_db, recomm_db):
+    def __init__(self, client_socket, dish_db, recomm_db, notification_db):
         self.client_socket = client_socket
         self.dish_db = dish_db
         self.recomm_db = recomm_db
+        self.notification_db = notification_db
 
     def handle_commands(self):
         while True:
@@ -19,8 +20,6 @@ class ChefCommandHandler:
                 
                 if parsed_message['command'] == 'LOGOUT':
                     break
-                elif parsed_message['command'] == 'ADD_DISH':
-                    self.handle_add_dish(parsed_message)
                 elif parsed_message['command'] == 'VIEW_MEAL':
                     self.handle_view_meal(parsed_message)
                 elif parsed_message['command'] == 'VIEW_AVAILABLE_MEAL':
@@ -59,6 +58,8 @@ class ChefCommandHandler:
     def handle_next_day_meal(self, message):
         meal_ids = message['data']
         if self.dish_db.add_next_day_meal(meal_ids):
+            message = '[ROLLOUT SELECTION] For tomorrow the meals are selected'
+            self.notification_db.update_notification(message)
             self.client_socket.send(self.create_message('NEXT_DAY_MEAL_SUCCESS', 'NEXT DAY MEAL UPDATED SUCCESSFULLY').encode())
 
 
@@ -75,9 +76,13 @@ class ChefCommandHandler:
         meal_ids = message['data']
         if self.dish_db.add_feedback_request(meal_ids):
             self.client_socket.send(self.create_message('RECIEVE_FEEDBACK_SUCCESSFUlly', 'receive feedback request').encode())
+
+
     def handle_roll_out_menu(self, message):
         meal_ids = message['data']
         if self.dish_db.add_roll_out_menu(meal_ids):
+            message = '[ROLLOUT]' + 'Chef rollout menu for tomorrow please go and vote'
+            self.notification_db.update_notification(message)
             self.client_socket.send(self.create_message('ROLL_OUT_SUCCESSFUlly', 'menu roll out successfully').encode())
 
     def handle_view_meal_type(self, message):
@@ -90,6 +95,8 @@ class ChefCommandHandler:
         }
         json_response = json.dumps(response)
         self.client_socket.send(json_response.encode())
+
+
     def handle_view_meal(self, message):
         print("inside handle_view_meal")
         meal_list = self.dish_db.view_meal()
@@ -100,10 +107,6 @@ class ChefCommandHandler:
         json_response = json.dumps(response)
         self.client_socket.send(json_response.encode())
 
-    def handle_add_dish(self, message):
-        new_dish = message['data']
-        self.dish_db.add_dish(new_dish['name'], new_dish['ingredients'])
-        self.client_socket.send(self.create_message('ADD_DISH_SUCCESS', 'Dish added successfully').encode())
 
     def create_message(self, command, data):
         return json.dumps({'command': command, 'data': data})

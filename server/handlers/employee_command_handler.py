@@ -1,9 +1,10 @@
 import json
 
 class EmployeeCommandHandler:
-    def __init__(self, client_socket, dish_db):
+    def __init__(self, client_socket, dish_db,notification_db):
         self.client_socket = client_socket
         self.dish_db = dish_db
+        self.notification_db = notification_db
 
     def handle_commands(self):
         while True:
@@ -15,6 +16,8 @@ class EmployeeCommandHandler:
                 parsed_message = self.parse_message(message)
                 if parsed_message is None:
                     continue
+                elif parsed_message['command'] == 'VIEW_NOTIFICATION':
+                    self.handle_view_notification(parsed_message)
                 elif parsed_message['command'] == 'VIEW_USER_VOTES':
                     self.handle_view_user_vote(parsed_message)
                 elif parsed_message['command'] == 'VIEW_MEAL':
@@ -31,6 +34,14 @@ class EmployeeCommandHandler:
                 print(f"Error: {e}")
                 break
 
+    def handle_view_notification(self,message):
+        notifications = self.notification_db.view_notification()
+        response = {
+            'command': 'VIEW_NOTIFICATION',
+            'data': notifications
+        }
+        json_response = json.dumps(response)
+        self.client_socket.send(json_response.encode())
 
     def handle_view_meal(self,message):
         availability = 1

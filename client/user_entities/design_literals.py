@@ -22,5 +22,6 @@ employee_literal = '''
 1. view menu
 2. give vote for tomorrow menu
 3. give feedback
+4. View Notifications
 4. logout
 '''

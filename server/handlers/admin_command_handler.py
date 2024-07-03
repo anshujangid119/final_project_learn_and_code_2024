@@ -3,10 +3,11 @@ import time
 from exception_handlers.custom_exception import DatabaseError, InvalidCommandError
 
 class AdminCommandHandler:
-    def __init__(self, client_socket, user_db, dish_db):
+    def __init__(self, client_socket, user_db, dish_db, notification_db):
         self.client_socket = client_socket
         self.user_db = user_db
         self.dish_db = dish_db
+        self.notification_db = notification_db
 
     def handle_commands(self):
         while True:
@@ -48,7 +49,10 @@ class AdminCommandHandler:
     def handle_delete_meal(self, message):
         data = message['data']
         try:
+            meal_name = self.dish_db.get_meal_name(data['meal_id'])
             if self.dish_db.delete_meal(data['meal_id']):
+                message = '[DELETED]' + str(meal_name) + 'Deleted from the menu'
+                self.notification_db.update_notification(message)
                 self.client_socket.send(self.create_message('DELETED_SUCCESSFULLY', 'Meal deleted successfully').encode())
         except Exception as e:
             raise DatabaseError(f"Failed to delete meal: {e}")
@@ -59,6 +63,9 @@ class AdminCommandHandler:
         print(meal)
         try:
             if self.dish_db.update_meal(meal['meal_id'], meal['availability']):
+                meal_name = self.dish_db.get_meal_name(meal['meal_id'])
+                message = '[UPDATED]' + str(meal_name) + 'Uddated in the menu'
+                self.notification_db.update_notification(message)
                 self.client_socket.send(self.create_message('UPDATE_MEAL_SUCCESS', 'Meal updated successfully').encode())
         except Exception as e:
             raise DatabaseError(f"Failed to update meal: {e}")
@@ -79,6 +86,8 @@ class AdminCommandHandler:
         new_meal = message['data']
         try:
             if self.dish_db.add_meal(new_meal['meal_name'], new_meal['meal_type'], new_meal['availability']):
+                message = '[NEW]' + str(new_meal['meal_name']) + 'arrived in the menu'
+                self.notification_db.update_notification(message)
                 self.client_socket.send(self.create_message('ADD_MEAL_SUCCESS', 'Meal added successfully').encode())
         except Exception as e:
             raise DatabaseError(f"Failed to add meal: {e}")

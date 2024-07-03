@@ -7,7 +7,7 @@ from handlers.chef_command_handler import ChefCommandHandler
 from handlers.employee_command_handler import EmployeeCommandHandler
 from handlers.default_command_handler import DefaultCommandHandler
 from databases.recommendation_database import RecommendationDatabase
-
+from databases.notification_database import Notification
 class ClientHandler(threading.Thread):
     def __init__(self, client_socket, client_address):
         super().__init__()
@@ -16,6 +16,7 @@ class ClientHandler(threading.Thread):
         self.user_db = UserDatabase()
         self.dish_db = DishDatabase()
         self.recomm_db = RecommendationDatabase()
+        self.notification_db = Notification()
 
     def run(self):
         print(f"New connection from {self.client_address}")
@@ -59,10 +60,10 @@ class ClientHandler(threading.Thread):
 
     def get_command_handler(self, user_role):
         if user_role == 'admin':
-            return AdminCommandHandler(self.client_socket, self.user_db, self.dish_db)
+            return AdminCommandHandler(self.client_socket, self.user_db, self.dish_db, self.notification_db)
         elif user_role == 'chef':
-            return ChefCommandHandler(self.client_socket, self.dish_db, self.recomm_db)
+            return ChefCommandHandler(self.client_socket, self.dish_db, self.recomm_db , self.notification_db)
         elif user_role == 'employee':
-            return EmployeeCommandHandler(self.client_socket, self.dish_db)
+            return EmployeeCommandHandler(self.client_socket, self.dish_db, self.notification_db)
         else:
             return DefaultCommandHandler(self.client_socket)

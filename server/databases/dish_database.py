@@ -9,6 +9,11 @@ class DishDatabase:
         db_connection.commit()
         # print("added successfully")
         return True
+    def get_meal_name(self,id):
+        query = "select name from meal where id = %s"
+        db_cursor.execute(query,(id,))
+        result = db_cursor.fetchall()
+        return result
 
     def view_meal(self):
         query = "SELECT * FROM meal"
