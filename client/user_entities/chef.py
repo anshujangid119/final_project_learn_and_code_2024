@@ -1,5 +1,5 @@
 from user_entities.user import User
-from user_entities.utils import send_message
+from user_entities.utils import send_message, logout
 from user_entities.design_literals import chef_literal
 import handlers.chef_input_handler as input_handler_chef
 import time
@@ -24,12 +24,15 @@ class Chef(User):
             elif action == '6':
                 self.get_discard_feedback()
             elif action == '7':
-                self.logout()
+                logout(self)
                 return
 
     def get_discard_feedback(self):
         response = send_message(self.client_socket, 'GET_DISCARD_FEEDBACK', {})
-        print(response)
+        print(f"{'FOOD ID':<5} {'FOOD NAME':<20} {'LIKED':<40} {'DISLIKED':<40} {'RECPIE':<40}")
+        for item in response['data']:
+            print(f"{item[1]:<5} {item[2]:<20} {item[4]:<40} {item[5]:<40} {item[6]:<40}")
+
     def generate_discard_menu(self):
         response = send_message(self.client_socket, 'GENERATE_DISCARD_MENU', {})
         discard_items = response['data']
@@ -159,10 +162,5 @@ class Chef(User):
         except ValueError as e:
             print(e)
 
-    def logout(self):
-        self.close()
-        time.sleep(2)
-        os.system('cls')
-        time.sleep(1)
-        print("Logout Successfully")
+
 

@@ -1,6 +1,5 @@
 from user_entities.user import User
 import sys
-import getpass
 sys.path.append("..")
 from user_entities.admin import Admin
 from user_entities.chef import Chef
@@ -19,7 +18,7 @@ def main(role = None, user_id = None):
     if user is not None:
         role = user[0]
         user_id = user[1]
-
+# factory design pattern
         if role == 'admin':
             admin = Admin(username, password)
             admin.client_socket = user_obj.client_socket

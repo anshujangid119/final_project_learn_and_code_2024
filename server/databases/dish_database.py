@@ -116,6 +116,29 @@ class DishDatabase:
             db_connection.commit()
         return True
 
+    def view_sorted_rollout_menu(self,user_id):
+        current_date = date.today()
+
+        query = '''
+        SELECT m.id AS food_id, m.name, f.vote
+        FROM dailymenu f
+        JOIN meal m ON f.food_id = m.id
+        JOIN meal_properties mp ON m.id = mp.meal_id
+        JOIN user_meal_preferences ump ON ump.user_id = %s
+        WHERE f.date = %s
+        ORDER BY
+            CASE WHEN mp.spice_level = ump.spice_level THEN 1 ELSE 0 END DESC,
+            CASE WHEN mp.region = ump.region THEN 2 ELSE 0 END DESC,
+            CASE WHEN mp.vegetarian_status = ump.vegetarian_status THEN 3 ELSE 0 END DESC;
+        '''
+
+        # Execute the query with current date and user ID
+        db_cursor.execute(query, (user_id, current_date))
+        result = db_cursor.fetchall()
+
+        return result
+
+
     def view_user_vote(self):
         current_date = date.today()
         query = "select f.food_id , m.name , f.vote from dailymenu f join meal m on f.food_id = m.id where f.date = %s"

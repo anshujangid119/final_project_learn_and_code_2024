@@ -1,13 +1,11 @@
 from user_entities.user import User
-from user_entities.utils import send_message
+from user_entities.utils import send_message, logout
 from user_entities.design_literals import admin_literal
 import handlers.admin_input_handler as input_handler_admin
-import os
-import time
+
 
 class Admin(User):
     def perform_actions(self, user_id):
-        os.system('cls')
         print(f"{'*' * 10} welcome {self.username} {'*' * 10}")
         while True:
             action = input(admin_literal)
@@ -22,7 +20,7 @@ class Admin(User):
             elif action == '5':
                 self.delete_meal()
             elif action == '6':
-                self.logout()
+                logout(self)
                 return
 
     def add_user(self):
@@ -81,9 +79,3 @@ class Admin(User):
         except ValueError as e:
             print(e)
 
-    def logout(self):
-        self.close()
-        time.sleep(2)
-        os.system('cls')
-        time.sleep(2)
-        print("Logout Successfully")
