@@ -50,12 +50,24 @@ class DishDatabase:
         db_connection.commit()
         return True
 
-    def add_meal(self, name, type, availability):
-        query = "INSERT INTO meal (name, meal_type, availability) VALUES (%s, %s , %s)"
-        db_cursor.execute(query, (name, type, availability))
+    def add_meal(self, name, meal_type, availability, price, spice_level, region, vegetarian_status):
+        insert_meal_query = '''
+        INSERT INTO meal (name, meal_type, availability, price) 
+        VALUES (%s, %s, %s, %s)
+        '''
+        db_cursor.execute(insert_meal_query, (name, meal_type, availability, price))
         db_connection.commit()
-        # print("added successfully")
+        meal_id = db_cursor.lastrowid
+
+        insert_properties_query = '''
+        INSERT INTO meal_properties (meal_id, spice_level, region, vegetarian_status) 
+        VALUES (%s, %s, %s, %s)
+        '''
+        db_cursor.execute(insert_properties_query, (meal_id, spice_level, region, vegetarian_status))
+        db_connection.commit()
+        print("Meal and its properties added successfully")
         return True
+
     def get_meal_name(self,id):
         query = "select name from meal where id = %s"
         db_cursor.execute(query,(id,))
@@ -63,10 +75,28 @@ class DishDatabase:
         return result
 
     def view_meal(self):
-        query = "SELECT * FROM meal"
+        query = '''
+        SELECT m.id, m.name, m.meal_type, m.availability, m.price, mp.spice_level, mp.region, mp.vegetarian_status
+        FROM meal m
+        JOIN meal_properties mp 
+        ON m.id = mp.meal_id;'''
         db_cursor.execute(query)
         result = db_cursor.fetchall()
-        return result
+        serialized_result = []
+        for row in result:
+            serialized_row = {
+                "food_id": row[0],
+                "food_name": row[1],
+                "meal_type": row[2],
+                "availability" : row[3],
+                "price": float(row[4]),
+                "spice_level": row[5],
+                "region": row[6],
+                "vegetarian_status": row[7]
+                }
+            serialized_result.append(serialized_row)
+
+        return serialized_result
     def delete_meal(self,meal_id):
         print(meal_id)
         print(type(meal_id))

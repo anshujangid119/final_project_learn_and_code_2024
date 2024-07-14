@@ -96,8 +96,7 @@ class EmployeeCommandHandler:
         self.client_socket.send(json_response.encode())
 
     def handle_view_meal(self,message):
-        availability = 1
-        meal_list = self.dish_db.available_meal(availability)
+        meal_list = self.dish_db.view_meal()
         response = {
             'command': 'VIEW_AVAILABLE_MEAL',
             'data': meal_list

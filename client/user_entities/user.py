@@ -1,6 +1,7 @@
 import socket
 import json
 from user_entities.utils import send_message
+import os
 
 class User:
     def __init__(self, username, password, host='127.0.0.1', port=9998,):
@@ -12,6 +13,7 @@ class User:
         self.connected = False
 
     def connect(self):
+        os.system('cls')
         try:
             if not self.connected:
                 self.client_socket.connect((self.host, self.port))
@@ -19,10 +21,9 @@ class User:
             auth_prompt = self.client_socket.recv(1024).decode()
             auth_response = send_message(self.client_socket, 'AUTH', {'username': self.username, 'password': self.password})
             if auth_response['command'] == 'AUTH_SUCCESS':
-                print(auth_response)
                 user_id = auth_response['data']['id']
                 role = auth_response['data']['role']
-                print(f"Logged in as {role}")
+                print("="*10, f"Welcome {self.username}",f"({role}) Your Operations Are", "="*10)
                 return role,user_id
             else:
                 print("Authentication failed")

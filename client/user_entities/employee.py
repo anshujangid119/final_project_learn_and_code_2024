@@ -7,8 +7,6 @@ import os
 
 class Employee(User):
     def perform_actions(self, user_id):
-        os.system('cls')
-        print(f"{'*' * 10} welcome {self.username} {'*' * 10}")
         while True:
             action = input(employee_literal)
             if action == '1':
@@ -76,10 +74,10 @@ class Employee(User):
     def view_meal(self):
         try:
             view_meal = send_message(self.client_socket, 'VIEW_MEAL', {})
-            print(f"{'NAME':<15} {'MEAL TYPE':<15} {'AVAILABILITY':<15}")
+            print(f"{'ID':<5} {'NAME':<20} {'MEAL TYPE':<20} {'AVAILABILITY':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  ")
             for i in view_meal['data']:
-                availability = "Available" if i[3] == 1 else "Not Available"
-                print(f"{i[1]:<15} {i[2]:<15} {availability:<15}")
+                availability = "Available" if i['availability'] == 1 else "Not Available"
+                print(f"{i['food_id']:<5} {i['food_name']:<20} {i['meal_type']:<20} {availability:<20} {i['price']:<20} {i['spice_level']:<20} {i['region']:<20} {i['vegetarian_status']:<20}")
         except ValueError as e:
             print(e)
 
@@ -130,8 +128,11 @@ class Employee(User):
     def view_notification(self):
         try:
             response = send_message(self.client_socket, 'VIEW_NOTIFICATION', {})
-            for i in response['data']:
-                print("------>" + i[0])
+            if len(response['data']) > 0:
+                for i in response['data']:
+                    print("------>" + i[0])
+            else:
+                print("There is no Notification for today")
         except ValueError as e:
             print(e)
 

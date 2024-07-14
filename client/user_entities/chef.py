@@ -7,8 +7,6 @@ import os
 
 class Chef(User):
     def perform_actions(self, user_id):
-        os.system('cls')
-        print(f"{'*' * 10}welcome {self.username}{'*' * 10}")
         while True:
             action = input(chef_literal)
             if action == '1':
@@ -81,10 +79,10 @@ class Chef(User):
     def view_meal(self):
         try:
             view_meal = send_message(self.client_socket, 'VIEW_MEAL', {})
-            print(f"{'ID':<15}{'NAME':<15}{'MEAL TYPE':<15}{'AVAILABILITY':<15}")
+            print(f"{'ID':<5} {'NAME':<20} {'MEAL TYPE':<20} {'AVAILABILITY':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  ")
             for i in view_meal['data']:
-                availability = "Available" if i[3] == 1 else "Not Available"
-                print(f"{i[0]:<15}{i[1]:<15}{i[2]:<15}{availability:<15}")
+                availability = "Available" if i['availability'] == 1 else "Not Available"
+                print(f"{i['food_id']:<5} {i['food_name']:<20} {i['meal_type']:<20} {availability:<20} {i['price']:<20} {i['spice_level']:<20} {i['region']:<20} {i['vegetarian_status']:<20}")
         except ValueError as e:
             print(e)
 
@@ -133,10 +131,11 @@ class Chef(User):
         try:
             print("Following are the meals present in the database:")
             view_meal = send_message(self.client_socket, 'VIEW_MEAL', {})
-            print(f"{'ID':<15}{'NAME':<15}{'MEAL TYPE':<15}{'AVAILABILITY':<15}")
+            print(f"{'ID':<5} {'NAME':<20} {'MEAL TYPE':<20} {'AVAILABILITY':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  ")
             for i in view_meal['data']:
-                availability = "Available" if i[3] == 1 else "Not Available"
-                print(f"{i[0]:<15}{i[1]:<15}{i[2]:<15}{availability:<15}")
+                availability = "Available" if i['availability'] == 1 else "Not Available"
+                print(
+                    f"{i['food_id']:<5} {i['food_name']:<20} {i['meal_type']:<20} {availability:<20} {i['price']:<20} {i['spice_level']:<20} {i['region']:<20} {i['vegetarian_status']:<20}")
 
             meal_ids = input_handler_chef.get_feedback_meal_ids()
             feedback_response = send_message(self.client_socket, 'RECIEVE_FEEDBACK', {'meal_ids': meal_ids})
