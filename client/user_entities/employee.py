@@ -12,7 +12,7 @@ class Employee(User):
             if action == '1':
                 self.view_meal()
             elif action == '2':
-                self.view_user_votes(user_id)
+                self.give_vote_for_tomorrow(user_id)
             elif action == '3':
                 self.view_feedback_dishes(user_id)
             elif action == '4':
@@ -81,21 +81,29 @@ class Employee(User):
         except ValueError as e:
             print(e)
 
-    def view_user_votes(self,user_id):
+    def give_vote_for_tomorrow(self,user_id):
         try:
             response = send_message(self.client_socket, 'VIEW_ROLLOUT_MEALS', {'user_id': user_id})
             if len(response['data'][0]) > 0:
-                print(f"{'ID':<15} {'Name':<15} ")
                 votes_id = []
+
+                print(f"{'ID':<5} {'NAME':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  {'Status':<20}")
                 for i in response['data'][0]:
-                    print(f"{i[0]:<15} {i[1]:<15} {i[2]:<15}")
+                    status = 'Selected' if i[6] == '1' else " - "
+                    print(f"{i[0]:<5} {i[1]:<20}   {i[2]:<20} {i[3]:<20} {i[4]:<20} {i[5]:<20} {status:<20}")
+                    # print(i, i[0])
                     votes_id.append(i[0])
+
                 if len(response['data'][1]) > 0:
                     print("You already voted. Please try tomorrow.")
                 else:
-                    meal_ids = input_handler.collect_votes(votes_id)
-                    vote_response = send_message(self.client_socket, 'VOTE_FOR_NEXT_DAY', {'meal_ids': meal_ids, 'user_id': user_id})
-                    print(vote_response)
+                    choice = input("Do you want to vote yes/no ")
+                    if choice == 'yes':
+                        meal_ids = input_handler.collect_votes(votes_id)
+                        vote_response = send_message(self.client_socket, 'VOTE_FOR_NEXT_DAY', {'meal_ids': meal_ids, 'user_id': user_id})
+                        print(vote_response)
+                    else:
+                        return
             else:
                 print("Chef has not rolled out the menu yet")
         except Exception as e:
