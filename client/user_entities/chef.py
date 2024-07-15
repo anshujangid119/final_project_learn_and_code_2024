@@ -1,5 +1,5 @@
 from user_entities.user import User
-from user_entities.utils import send_message
+from user_entities.utils import send_message, logout
 from user_entities.design_literals import chef_literal
 import handlers.chef_input_handler as input_handler_chef
 import time
@@ -7,8 +7,6 @@ import os
 
 class Chef(User):
     def perform_actions(self, user_id):
-        os.system('cls')
-        print(f"{'*' * 10}welcome {self.username}{'*' * 10}")
         while True:
             action = input(chef_literal)
             if action == '1':
@@ -24,12 +22,15 @@ class Chef(User):
             elif action == '6':
                 self.get_discard_feedback()
             elif action == '7':
-                self.logout()
+                logout(self)
                 return
 
     def get_discard_feedback(self):
         response = send_message(self.client_socket, 'GET_DISCARD_FEEDBACK', {})
-        print(response)
+        print(f"{'FOOD ID':<5} {'FOOD NAME':<20} {'LIKED':<40} {'DISLIKED':<40} {'RECPIE':<40}")
+        for item in response['data']:
+            print(f"{item[1]:<5} {item[2]:<20} {item[4]:<40} {item[5]:<40} {item[6]:<40}")
+
     def generate_discard_menu(self):
         response = send_message(self.client_socket, 'GENERATE_DISCARD_MENU', {})
         discard_items = response['data']
@@ -78,10 +79,10 @@ class Chef(User):
     def view_meal(self):
         try:
             view_meal = send_message(self.client_socket, 'VIEW_MEAL', {})
-            print(f"{'ID':<15}{'NAME':<15}{'MEAL TYPE':<15}{'AVAILABILITY':<15}")
+            print(f"{'ID':<5} {'NAME':<20} {'MEAL TYPE':<20} {'AVAILABILITY':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  ")
             for i in view_meal['data']:
-                availability = "Available" if i[3] == 1 else "Not Available"
-                print(f"{i[0]:<15}{i[1]:<15}{i[2]:<15}{availability:<15}")
+                availability = "Available" if i['availability'] == 1 else "Not Available"
+                print(f"{i['food_id']:<5} {i['food_name']:<20} {i['meal_type']:<20} {availability:<20} {i['price']:<20} {i['spice_level']:<20} {i['region']:<20} {i['vegetarian_status']:<20}")
         except ValueError as e:
             print(e)
 
@@ -130,10 +131,11 @@ class Chef(User):
         try:
             print("Following are the meals present in the database:")
             view_meal = send_message(self.client_socket, 'VIEW_MEAL', {})
-            print(f"{'ID':<15}{'NAME':<15}{'MEAL TYPE':<15}{'AVAILABILITY':<15}")
+            print(f"{'ID':<5} {'NAME':<20} {'MEAL TYPE':<20} {'AVAILABILITY':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  ")
             for i in view_meal['data']:
-                availability = "Available" if i[3] == 1 else "Not Available"
-                print(f"{i[0]:<15}{i[1]:<15}{i[2]:<15}{availability:<15}")
+                availability = "Available" if i['availability'] == 1 else "Not Available"
+                print(
+                    f"{i['food_id']:<5} {i['food_name']:<20} {i['meal_type']:<20} {availability:<20} {i['price']:<20} {i['spice_level']:<20} {i['region']:<20} {i['vegetarian_status']:<20}")
 
             meal_ids = input_handler_chef.get_feedback_meal_ids()
             feedback_response = send_message(self.client_socket, 'RECIEVE_FEEDBACK', {'meal_ids': meal_ids})
@@ -159,10 +161,5 @@ class Chef(User):
         except ValueError as e:
             print(e)
 
-    def logout(self):
-        self.close()
-        time.sleep(2)
-        os.system('cls')
-        time.sleep(1)
-        print("Logout Successfully")
+
 

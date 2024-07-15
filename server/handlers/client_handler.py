@@ -64,6 +64,6 @@ class ClientHandler(threading.Thread):
         elif user_role == 'chef':
             return ChefCommandHandler(self.client_socket, self.dish_db, self.recomm_db , self.notification_db)
         elif user_role == 'employee':
-            return EmployeeCommandHandler(self.client_socket, self.dish_db, self.notification_db)
+            return EmployeeCommandHandler(self.client_socket, self.dish_db, self.notification_db,self.user_db)
         else:
             return DefaultCommandHandler(self.client_socket)

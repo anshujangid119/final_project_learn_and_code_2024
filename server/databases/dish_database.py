@@ -50,12 +50,24 @@ class DishDatabase:
         db_connection.commit()
         return True
 
-    def add_meal(self, name, type, availability):
-        query = "INSERT INTO meal (name, meal_type, availability) VALUES (%s, %s , %s)"
-        db_cursor.execute(query, (name, type, availability))
+    def add_meal(self, name, meal_type, availability, price, spice_level, region, vegetarian_status):
+        insert_meal_query = '''
+        INSERT INTO meal (name, meal_type, availability, price) 
+        VALUES (%s, %s, %s, %s)
+        '''
+        db_cursor.execute(insert_meal_query, (name, meal_type, availability, price))
         db_connection.commit()
-        # print("added successfully")
+        meal_id = db_cursor.lastrowid
+
+        insert_properties_query = '''
+        INSERT INTO meal_properties (meal_id, spice_level, region, vegetarian_status) 
+        VALUES (%s, %s, %s, %s)
+        '''
+        db_cursor.execute(insert_properties_query, (meal_id, spice_level, region, vegetarian_status))
+        db_connection.commit()
+        print("Meal and its properties added successfully")
         return True
+
     def get_meal_name(self,id):
         query = "select name from meal where id = %s"
         db_cursor.execute(query,(id,))
@@ -63,10 +75,28 @@ class DishDatabase:
         return result
 
     def view_meal(self):
-        query = "SELECT * FROM meal"
+        query = '''
+        SELECT m.id, m.name, m.meal_type, m.availability, m.price, mp.spice_level, mp.region, mp.vegetarian_status
+        FROM meal m
+        JOIN meal_properties mp 
+        ON m.id = mp.meal_id;'''
         db_cursor.execute(query)
         result = db_cursor.fetchall()
-        return result
+        serialized_result = []
+        for row in result:
+            serialized_row = {
+                "food_id": row[0],
+                "food_name": row[1],
+                "meal_type": row[2],
+                "availability" : row[3],
+                "price": float(row[4]),
+                "spice_level": row[5],
+                "region": row[6],
+                "vegetarian_status": row[7]
+                }
+            serialized_result.append(serialized_row)
+
+        return serialized_result
     def delete_meal(self,meal_id):
         print(meal_id)
         print(type(meal_id))
@@ -85,7 +115,7 @@ class DishDatabase:
         return True
 
     def available_meal(self, availability):
-        query = "select * from meal where availability = %s"
+        query = "select id,name,meal_type, availability , cast(price as char) as price from meal where availability = %s"
         db_cursor.execute(query, (availability,))
         result = db_cursor.fetchall()
         return result
@@ -116,6 +146,44 @@ class DishDatabase:
             db_connection.commit()
         return True
 
+    def view_sorted_rollout_menu(self,user_id):
+        current_date = date.today()
+
+        query = '''
+            SELECT 
+                m.id AS food_id, 
+                m.name, 
+                CAST(m.price AS CHAR) AS price,  
+                mp.spice_level, 
+                mp.region, 
+                mp.vegetarian_status,
+                CAST(f.isselected as CHAR) as status,
+                (CASE WHEN mp.spice_level = ump.spice_level THEN 1 ELSE 0 END + 
+                 CASE WHEN mp.region = ump.region THEN 2 ELSE 0 END + 
+                 CASE WHEN mp.vegetarian_status = ump.vegetarian_status THEN 3 ELSE 0 END) AS score
+                 
+            FROM 
+                dailymenu f
+            JOIN 
+                meal m ON f.food_id = m.id
+            JOIN 
+                meal_properties mp ON m.id = mp.meal_id
+            JOIN 
+                user_meal_preferences ump ON ump.user_id = %s
+            WHERE 
+                f.date = %s
+            ORDER BY
+                score DESC;
+
+        '''
+
+        # Execute the query with current date and user ID
+        db_cursor.execute(query, (user_id, current_date))
+        result = db_cursor.fetchall()
+
+        return result
+
+
     def view_user_vote(self):
         current_date = date.today()
         query = "select f.food_id , m.name , f.vote from dailymenu f join meal m on f.food_id = m.id where f.date = %s"
@@ -129,7 +197,7 @@ class DishDatabase:
             query = "update dailymenu set isselected = 1 where food_id = %s"
             db_cursor.execute(query, (meal_id, ))
             db_connection.commit()
-            return True
+        return True
 
     def vote_for_next_day(self,data,):
         list_id = data['meal_ids']

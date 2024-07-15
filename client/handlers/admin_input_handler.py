@@ -1,63 +1,85 @@
 def get_new_user_details():
     while True:
-        # Loop to get a valid username
         while True:
             new_username = input("New username: ").strip()
             if not new_username:
                 print("Username cannot be empty.")
             else:
-                break  # Exit the loop if the username is valid
+                break
 
-        # Loop to get a valid password
         while True:
             new_password = input("New password: ").strip()
             if not new_password:
                 print("Password cannot be empty.")
             else:
-                break  # Exit the loop if the password is valid
+                break
 
-        # Loop to get a valid role
         while True:
             new_role = input("New role (admin/chef/employee): ").strip().lower()
             if new_role not in ['admin', 'chef', 'employee']:
                 print("Invalid role. Please enter 'admin', 'chef', or 'employee'.")
             else:
-                break  # Exit the loop if the role is valid
+                break
 
         return new_username, new_password, new_role
 
-
 def get_new_dish_details():
     while True:
-        # Loop to get a valid meal name
         while True:
             meal_name = input("Enter Dish name: ").strip()
             if not meal_name:
                 print("Dish name cannot be empty.")
             else:
-                break  # Exit the loop if the dish name is valid
+                break
 
-        # Loop to get a valid meal type
         while True:
             meal_type = input("Enter Dish Type: 1. For Breakfast 2. For Lunch 3. For Dinner: ").strip()
             if meal_type not in ['1', '2', '3']:
                 print("Invalid meal type. Please enter 1, 2, or 3.")
             else:
-                break  # Exit the loop if the meal type is valid
+                meal_type = 'breakfast' if meal_type == '1' else 'lunch' if meal_type == '2' else 'dinner'
+                break
 
-        # Loop to get a valid availability
         while True:
             availability = input("Is available (yes/no): ").strip().lower()
             if availability not in ['yes', 'no']:
                 print("Invalid availability. Please enter 'yes' or 'no'.")
             else:
                 availability = 1 if availability == 'yes' else 0
-                break  # Exit the loop if the availability is valid
+                break
 
-        meal_type = 'breakfast' if meal_type == '1' else 'lunch' if meal_type == '2' else 'dinner'
+        while True:
+            try:
+                price = float(input("Enter Price ").strip())
+                if price < 1:
+                    print("Price must be greater then 0")
+                else:
+                    break
+            except ValueError:
+                print("Invalid input. Please enter a numeric value for the price.")
 
-        return meal_name, meal_type, availability
+        while True:
+            spice_level = input("Enter Spice Level 'Mild'/'Medium'/'Hot' : ").strip()
+            if spice_level not in ['Mild', 'Medium', 'Hot']:
+                print("Invalid spice level. Please enter 'Mild', 'Medium', 'Hot'.")
+            else:
+                break
 
+        while True:
+            region = input("Enter Region 'South'/'North'/'Other' : ").strip()
+            if region not in ['South', 'North', 'Other']:
+                print("Invalid region. Please enter 'South', 'North', or 'Other'.")
+            else:
+                break
+
+        while True:
+            vegetarian_status = input("Is the dish Vegetarian, Non-Vegetarian, or Eggetarian?: ").strip()
+            if vegetarian_status not in ['Vegetarian', 'Non-Vegetarian', 'Eggetarian']:
+                print("Invalid vegetarian status. Please enter 'Vegetarian', 'Non-Vegetarian', or 'Eggetarian'.")
+            else:
+                break
+
+        return meal_name, meal_type, availability, price, spice_level, region, vegetarian_status
 
 def get_meal_id():
     while True:
@@ -66,7 +88,6 @@ def get_meal_id():
             return meal_id
         except ValueError:
             print("Invalid input. Please enter a valid meal ID.")
-
 
 def get_availability_status():
     while True:

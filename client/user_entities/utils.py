@@ -1,5 +1,5 @@
 import json
-
+import os,time
 
 def send_message(sock, command, data):
     message = json.dumps({'command': command, 'data': data})
@@ -13,3 +13,10 @@ def send_message(sock, command, data):
         return json.loads(response)
     except json.JSONDecodeError:
         raise ValueError(f"Invalid JSON response: {response}")
+
+def logout(obj):
+    obj.close()
+    time.sleep(2)
+    os.system('cls')
+    time.sleep(1)
+    print("Logout Successfully")
