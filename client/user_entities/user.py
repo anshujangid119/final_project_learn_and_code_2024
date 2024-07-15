@@ -55,5 +55,3 @@ class User:
     def perform_actions(self):
         raise NotImplementedError("Subclasses must implement this method")
 
-# a= User("admin","adminpass")
-# a.connect()

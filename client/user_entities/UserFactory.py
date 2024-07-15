@@ -1,6 +1,7 @@
 from user_entities.admin import Admin
 from user_entities.chef import Chef
 from user_entities.employee import Employee
+
 class UserFactory:
     @staticmethod
     def create_user(role, username, password):

@@ -1,9 +1,6 @@
 from user_entities.user import User
 import sys
 sys.path.append("..")
-# from user_entities.admin import Admin
-# from user_entities.chef import Chef
-# from user_entities.employee import Employee
 from user_entities.UserFactory import UserFactory
 
 print("------------------------ welcome to Cafteria management-------------------------------------------")

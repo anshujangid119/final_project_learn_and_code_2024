@@ -45,7 +45,7 @@ class Employee(User):
             print(f"{'ID':<15} {'NAME':<15}")
             meal_ids = []
             for data in response['data']:
-                print(f"{data[1]:<15} {data[2]:<15}")
+                print(f"{data[0]:<15} {data[2]:<15}")
             # print(response['data'])
             if len(response['data']) > 0:
                 discard_menu_id = input("enter id that you want to give feedback")

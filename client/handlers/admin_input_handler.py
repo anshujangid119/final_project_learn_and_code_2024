@@ -1,28 +1,25 @@
 def get_new_user_details():
     while True:
-        # Loop to get a valid username
         while True:
             new_username = input("New username: ").strip()
             if not new_username:
                 print("Username cannot be empty.")
             else:
-                break  # Exit the loop if the username is valid
+                break
 
-        # Loop to get a valid password
         while True:
             new_password = input("New password: ").strip()
             if not new_password:
                 print("Password cannot be empty.")
             else:
-                break  # Exit the loop if the password is valid
+                break
 
-        # Loop to get a valid role
         while True:
             new_role = input("New role (admin/chef/employee): ").strip().lower()
             if new_role not in ['admin', 'chef', 'employee']:
                 print("Invalid role. Please enter 'admin', 'chef', or 'employee'.")
             else:
-                break  # Exit the loop if the role is valid
+                break
 
         return new_username, new_password, new_role
 
@@ -53,37 +50,36 @@ def get_new_dish_details():
 
         while True:
             try:
-                price = float(input("Enter Price (20 to 200): ").strip())
-                if price < 20 or price > 200:
-                    print("Price must be between 20 and 200.")
+                price = float(input("Enter Price ").strip())
+                if price < 1:
+                    print("Price must be greater then 0")
                 else:
                     break
             except ValueError:
                 print("Invalid input. Please enter a numeric value for the price.")
 
         while True:
-            spice_level = input("Enter Spice Level (mild/medium/spicy): ").strip().lower()
-            if spice_level not in ['mild', 'medium', 'spicy']:
-                print("Invalid spice level. Please enter 'mild', 'medium', or 'spicy'.")
+            spice_level = input("Enter Spice Level 'Mild'/'Medium'/'Hot' : ").strip()
+            if spice_level not in ['Mild', 'Medium', 'Hot']:
+                print("Invalid spice level. Please enter 'Mild', 'Medium', 'Hot'.")
             else:
                 break
 
         while True:
-            region = input("Enter Region (South/North/Other): ").strip().capitalize()
+            region = input("Enter Region 'South'/'North'/'Other' : ").strip()
             if region not in ['South', 'North', 'Other']:
                 print("Invalid region. Please enter 'South', 'North', or 'Other'.")
             else:
                 break
 
         while True:
-            vegetarian_status = input("Is the dish Vegetarian, Non-Vegetarian, or Eggetarian?: ").strip().capitalize()
+            vegetarian_status = input("Is the dish Vegetarian, Non-Vegetarian, or Eggetarian?: ").strip()
             if vegetarian_status not in ['Vegetarian', 'Non-Vegetarian', 'Eggetarian']:
                 print("Invalid vegetarian status. Please enter 'Vegetarian', 'Non-Vegetarian', or 'Eggetarian'.")
             else:
                 break
 
         return meal_name, meal_type, availability, price, spice_level, region, vegetarian_status
-
 
 def get_meal_id():
     while True:
@@ -92,7 +88,6 @@ def get_meal_id():
             return meal_id
         except ValueError:
             print("Invalid input. Please enter a valid meal ID.")
-
 
 def get_availability_status():
     while True:
