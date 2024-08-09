@@ -13,7 +13,6 @@ class User:
         self.connected = False
 
     def connect(self):
-        os.system('cls')
         try:
             if not self.connected:
                 self.client_socket.connect((self.host, self.port))

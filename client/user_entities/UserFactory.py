@@ -11,5 +11,3 @@ class UserFactory:
             return Chef(username, password)
         elif role == 'employee':
             return Employee(username, password)
-        else:
-            return None

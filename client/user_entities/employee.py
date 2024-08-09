@@ -6,6 +6,7 @@ import time
 import os
 
 class Employee(User):
+
     def perform_actions(self, user_id):
         while True:
             action = input(employee_literal)
@@ -16,9 +17,9 @@ class Employee(User):
             elif action == '3':
                 self.view_feedback_dishes(user_id)
             elif action == '4':
-                self.view_notification()
+                self.view_notification(user_id)
             elif action == '5':
-                self.view_discard_menu()
+                self.view_discard_meal_menu()
             elif action == '6':
                 self.update_profile(user_id)
             elif action == '7':
@@ -39,7 +40,7 @@ class Employee(User):
 
 
 
-    def view_discard_menu(self):
+    def view_discard_meal_menu(self):
         try:
             response = send_message(self.client_socket, 'VIEW_DISCARD_MENU', {})
             print(f"{'ID':<15} {'NAME':<15}")
@@ -87,10 +88,10 @@ class Employee(User):
             if len(response['data'][0]) > 0:
                 votes_id = []
 
-                print(f"{'ID':<5} {'NAME':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  {'Status':<20}")
+                print(f"{'ID':<5} {'NAME':<20} {'meal_type':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  {'Status':<20}")
                 for i in response['data'][0]:
                     status = 'Selected' if i[6] == '1' else " - "
-                    print(f"{i[0]:<5} {i[1]:<20}   {i[2]:<20} {i[3]:<20} {i[4]:<20} {i[5]:<20} {status:<20}")
+                    print(f"{i[0]:<5} {i[1]:<20} {i[8]:<20} {i[2]:<20} {i[3]:<20} {i[4]:<20} {i[5]:<20} {status:<20}")
                     # print(i, i[0])
                     votes_id.append(i[0])
 
@@ -133,12 +134,12 @@ class Employee(User):
         except ValueError as e:
             print(e)
 
-    def view_notification(self):
+    def view_notification(self,user_id):
         try:
-            response = send_message(self.client_socket, 'VIEW_NOTIFICATION', {})
+            response = send_message(self.client_socket, 'VIEW_NOTIFICATION', {'user_id' : user_id})
             if len(response['data']) > 0:
                 for i in response['data']:
-                    print("------>" + i[0])
+                    print("------>" + i[1])
             else:
                 print("There is no Notification for today")
         except ValueError as e:

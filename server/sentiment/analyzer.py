@@ -30,7 +30,7 @@ class SentimentAnalyzer:
         }
 
         self.negation_words = {'not', 'no', 'never', 'none'}
-        self.intensifiers = {'very': 1.5, 'extremely': 2, 'quite': 1.2, 'really': 1.5, 'slightly': 0.5}
+        self.intensifiers = {'very': 1.5, 'extremely': 2, 'quite': 1.2, 'really': 1.5, 'slightly': 1.1}
 
         self.contraction_patterns = [
             (re.compile(r"n't"), ' not'),

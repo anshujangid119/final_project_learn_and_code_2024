@@ -87,7 +87,8 @@ class EmployeeCommandHandler:
         self.client_socket.send(json_response.encode())
 
     def handle_view_notification(self,message):
-        notifications = self.notification_db.view_notification()
+        user_id = message['data']['user_id']
+        notifications = self.notification_db.view_notification(user_id)
         response = {
             'command': 'VIEW_NOTIFICATION',
             'data': notifications

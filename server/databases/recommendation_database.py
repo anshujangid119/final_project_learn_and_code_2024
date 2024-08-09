@@ -76,15 +76,4 @@ class RecommendationDatabase():
         data_fetch_query = 'select * from discard_menu'
         db_cursor.execute(data_fetch_query)
         result = db_cursor.fetchall()
-        return result
-        # serialized_result = []
-        # for row in result:
-        #     serialized_row = {
-        #         "id": row[0],
-        #         "food_id": row[1],
-        #         "food_name": row[2],
-        #         "is_discarded" : float(row[3]),
-        #         }
-        #     serialized_result.append(serialized_row)
-
         return serialized_result
