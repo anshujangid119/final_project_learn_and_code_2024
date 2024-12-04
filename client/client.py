@@ -1,10 +1,7 @@
 from user_entities.user import User
 import sys
-import getpass
 sys.path.append("..")
-from user_entities.admin import Admin
-from user_entities.chef import Chef
-from user_entities.employee import Employee
+from user_entities.UserFactory import UserFactory
 
 print("------------------------ welcome to Cafteria management-------------------------------------------")
 
@@ -20,55 +17,21 @@ def main(role = None, user_id = None):
         role = user[0]
         user_id = user[1]
 
-        if role == 'admin':
-            admin = Admin(username, password)
-            admin.client_socket = user_obj.client_socket
-            admin.perform_actions(user_id)
+        user_instance = UserFactory.create_user(role, username, password)
+        if user_instance:
+            user_instance.client_socket = user_obj.client_socket
+            user_instance.perform_actions(user_id)
             main()
-
-        elif role == 'chef':
-            chef = Chef(username, password)
-            chef.client_socket = user_obj.client_socket
-            chef.perform_actions(user_id)
+        else:
+            print("Invalid role. Please try again.")
             main()
-    #
-        elif role == 'employee':
-            employee = Employee(username, password)
-            employee.client_socket = user_obj.client_socket
-            employee.perform_actions(user_id)
-            main()
-
     else:
         if retries_count > 0:
-            print(f"Please try again you have {retries_count} more attempt to login")
+            print(f"Please try again. You have {retries_count} more attempts to login.")
             retries_count -= 1
             main()
         else:
-            print("You have reached the number of attempts please try again")
-
-
-
+            print("You have reached the number of attempts. Please try again later.")
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

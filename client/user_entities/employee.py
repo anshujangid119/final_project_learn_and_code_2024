@@ -1,39 +1,53 @@
 from user_entities.user import User
-from user_entities.utils import send_message
+from user_entities.utils import send_message, logout
 from user_entities.design_literals import employee_literal
 import handlers.employee_input_handler as input_handler
 import time
 import os
 
 class Employee(User):
+
     def perform_actions(self, user_id):
-        os.system('cls')
-        print(f"{'*' * 10} welcome {self.username} {'*' * 10}")
         while True:
             action = input(employee_literal)
             if action == '1':
                 self.view_meal()
             elif action == '2':
-                self.view_user_votes(user_id)
+                self.give_vote_for_tomorrow(user_id)
             elif action == '3':
                 self.view_feedback_dishes(user_id)
             elif action == '4':
-                self.view_notification()
+                self.view_notification(user_id)
             elif action == '5':
-                self.view_discard_menu()
+                self.view_discard_meal_menu()
             elif action == '6':
-                self.update_profile()
+                self.update_profile(user_id)
             elif action == '7':
-                self.logout()
+                logout(self)
                 return
 
-    def update_profile(self):
-        response = send_message(self.client_socket, 'UPDATE_PROFILE', {})
-        print(response)
-    def view_discard_menu(self):
+    def update_profile(self,user_id):
+        response = send_message(self.client_socket, 'PROFILE_DATA', {'user_id':user_id})
+        # print(response)
+        print(f"your spice level is {response['data'][2]} and region is {response['data'][3]} and you are {response['data'][4]}")
+        choice = input("do you want to change update this press: yes/no ")
+        if choice == 'yes':
+            spice_level = input("Choose your spice level from ('Mild', 'Medium', 'Hot')")
+            region = input("Choose your region from ('South', 'North', 'Other')")
+            vegetarian_status = input("Choose your vegetarian_status from ('Vegetarian', 'Non-Vegetarian', 'Eggetarian')")
+            response = send_message(self.client_socket, 'UPDATE_PROFILE', {'spice_level': spice_level, 'region':region, 'vegetarian_status':vegetarian_status,'user_id':user_id})
+            print(response)
+
+
+
+    def view_discard_meal_menu(self):
         try:
             response = send_message(self.client_socket, 'VIEW_DISCARD_MENU', {})
-            print(response['data'])
+            print(f"{'ID':<15} {'NAME':<15}")
+            meal_ids = []
+            for data in response['data']:
+                print(f"{data[0]:<15} {data[2]:<15}")
+            # print(response['data'])
             if len(response['data']) > 0:
                 discard_menu_id = input("enter id that you want to give feedback")
                 like_text = input("what you liked about this")
@@ -51,7 +65,7 @@ class Employee(User):
                 )
                 print(feedback_response)
             else:
-                print("there is no item for feedback.")
+                print("there is no item in discard menu for feedback.")
 
 
 
@@ -61,27 +75,38 @@ class Employee(User):
     def view_meal(self):
         try:
             view_meal = send_message(self.client_socket, 'VIEW_MEAL', {})
-            print(f"{'NAME':<15} {'MEAL TYPE':<15} {'AVAILABILITY':<15}")
+            print(f"{'ID':<5} {'NAME':<20} {'MEAL TYPE':<20} {'AVAILABILITY':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  ")
             for i in view_meal['data']:
-                availability = "Available" if i[3] == 1 else "Not Available"
-                print(f"{i[1]:<15} {i[2]:<15} {availability:<15}")
+                availability = "Available" if i['availability'] == 1 else "Not Available"
+                print(f"{i['food_id']:<5} {i['food_name']:<20} {i['meal_type']:<20} {availability:<20} {i['price']:<20} {i['spice_level']:<20} {i['region']:<20} {i['vegetarian_status']:<20}")
         except ValueError as e:
             print(e)
 
-    def view_user_votes(self, user_id):
+    def give_vote_for_tomorrow(self,user_id):
         try:
-            response = send_message(self.client_socket, 'VIEW_USER_VOTES', {'user_id': user_id})
-            print(f"{'ID':<15} {'Name':<15} {'VOTES':<15}")
-            votes_id = []
-            for i in response['data'][0]:
-                print(f"{i[0]:<15} {i[1]:<15} {i[2]:<15}")
-                votes_id.append(i[0])
-            if len(response['data'][1]) > 0:
-                print("You already voted. Please try tomorrow.")
+            response = send_message(self.client_socket, 'VIEW_ROLLOUT_MEALS', {'user_id': user_id})
+            if len(response['data'][0]) > 0:
+                votes_id = []
+
+                print(f"{'ID':<5} {'NAME':<20} {'meal_type':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  {'Status':<20}")
+                for i in response['data'][0]:
+                    status = 'Selected' if i[6] == '1' else " - "
+                    print(f"{i[0]:<5} {i[1]:<20} {i[8]:<20} {i[2]:<20} {i[3]:<20} {i[4]:<20} {i[5]:<20} {status:<20}")
+                    # print(i, i[0])
+                    votes_id.append(i[0])
+
+                if len(response['data'][1]) > 0:
+                    print("You already voted. Please try tomorrow.")
+                else:
+                    choice = input("Do you want to vote yes/no ")
+                    if choice == 'yes':
+                        meal_ids = input_handler.collect_votes(votes_id)
+                        vote_response = send_message(self.client_socket, 'VOTE_FOR_NEXT_DAY', {'meal_ids': meal_ids, 'user_id': user_id})
+                        print(vote_response)
+                    else:
+                        return
             else:
-                meal_ids = input_handler.collect_votes(votes_id)
-                vote_response = send_message(self.client_socket, 'VOTE_FOR_NEXT_DAY', {'meal_ids': meal_ids, 'user_id': user_id})
-                print(vote_response)
+                print("Chef has not rolled out the menu yet")
         except Exception as e:
             print(e)
 
@@ -109,17 +134,14 @@ class Employee(User):
         except ValueError as e:
             print(e)
 
-    def view_notification(self):
+    def view_notification(self,user_id):
         try:
-            response = send_message(self.client_socket, 'VIEW_NOTIFICATION', {})
-            for i in response['data']:
-                print("------>" + i[0])
+            response = send_message(self.client_socket, 'VIEW_NOTIFICATION', {'user_id' : user_id})
+            if len(response['data']) > 0:
+                for i in response['data']:
+                    print("------>" + i[1])
+            else:
+                print("There is no Notification for today")
         except ValueError as e:
             print(e)
 
-    def logout(self):
-        self.close()
-        time.sleep(2)
-        os.system('cls')
-        time.sleep(2)
-        print("Logout Successfully")

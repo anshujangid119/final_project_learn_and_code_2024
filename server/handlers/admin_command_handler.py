@@ -85,7 +85,14 @@ class AdminCommandHandler:
     def handle_add_meal(self, message):
         new_meal = message['data']
         try:
-            if self.dish_db.add_meal(new_meal['meal_name'], new_meal['meal_type'], new_meal['availability']):
+            if self.dish_db.add_meal(
+                    new_meal['meal_name'],
+                    new_meal['meal_type'],
+                    new_meal['availability'],
+                    new_meal['price'],
+                    new_meal['spice_level'],
+                    new_meal['region'],
+                    new_meal['vegetarian_status']):
                 message = '[NEW]' + str(new_meal['meal_name']) + 'arrived in the menu'
                 self.notification_db.update_notification(message)
                 self.client_socket.send(self.create_message('ADD_MEAL_SUCCESS', 'Meal added successfully').encode())

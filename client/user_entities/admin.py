@@ -1,14 +1,11 @@
 from user_entities.user import User
-from user_entities.utils import send_message
+from user_entities.utils import send_message, logout
 from user_entities.design_literals import admin_literal
 import handlers.admin_input_handler as input_handler_admin
-import os
-import time
+
 
 class Admin(User):
     def perform_actions(self, user_id):
-        os.system('cls')
-        print(f"{'*' * 10} welcome {self.username} {'*' * 10}")
         while True:
             action = input(admin_literal)
             if action == '1':
@@ -22,7 +19,7 @@ class Admin(User):
             elif action == '5':
                 self.delete_meal()
             elif action == '6':
-                self.logout()
+                logout(self)
                 return
 
     def add_user(self):
@@ -38,24 +35,28 @@ class Admin(User):
             print(e)
 
     def add_dish(self):
-        meal_name, meal_type, availability = input_handler_admin.get_new_dish_details()
+        meal_name, meal_type, availability, price, spice_level, region, vegetarian_status = input_handler_admin.get_new_dish_details()
         try:
             add_dish_response = send_message(self.client_socket, 'ADD_DISH', {
                 'meal_name': meal_name,
                 'meal_type': meal_type,
-                'availability': availability
+                'availability': availability,
+                'price': price,
+                'spice_level':spice_level,
+                'region':region,
+                'vegetarian_status':vegetarian_status
             })
-            print(add_dish_response)
+            print(add_dish_response['data'])
         except ValueError as e:
             print(e)
 
     def view_meal(self):
         try:
             view_meal = send_message(self.client_socket, 'VIEW_MEAL', {})
-            print(f"{'ID':<15} {'NAME':<15} {'MEAL TYPE':<15} {'AVAILABILITY':<15}")
+            print(f"{'ID':<5} {'NAME':<20} {'MEAL TYPE':<20} {'AVAILABILITY':<20} {'PRICE':<20} {'spice_level':<20} {'region':<20} {'vegetarian_status':<20}  ")
             for i in view_meal['data']:
-                availability = "Available" if i[3] == 1 else "Not Available"
-                print(f"{i[0]:<15} {i[1]:<15} {i[2]:<15} {availability:<15}")
+                availability = "Available" if i['availability'] == 1 else "Not Available"
+                print(f"{i['food_id']:<5} {i['food_name']:<20} {i['meal_type']:<20} {availability:<20} {i['price']:<20} {i['spice_level']:<20} {i['region']:<20} {i['vegetarian_status']:<20}")
         except ValueError as e:
             print(e)
 
@@ -81,9 +82,3 @@ class Admin(User):
         except ValueError as e:
             print(e)
 
-    def logout(self):
-        self.close()
-        time.sleep(2)
-        os.system('cls')
-        time.sleep(2)
-        print("Logout Successfully")

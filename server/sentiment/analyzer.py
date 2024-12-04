@@ -30,7 +30,7 @@ class SentimentAnalyzer:
         }
 
         self.negation_words = {'not', 'no', 'never', 'none'}
-        self.intensifiers = {'very': 1.5, 'extremely': 2, 'quite': 1.2, 'really': 1.5, 'slightly': 0.5}
+        self.intensifiers = {'very': 1.5, 'extremely': 2, 'quite': 1.2, 'really': 1.5, 'slightly': 1.1}
 
         self.contraction_patterns = [
             (re.compile(r"n't"), ' not'),
@@ -84,18 +84,14 @@ class SentimentAnalyzer:
         if total_weight > 0:
             weighted_average_score = total_score / total_weight
             print(weighted_average_score)
-            # Normalize the score to a 1 to 5 scale
             normalized_score = 2 * weighted_average_score + 3
-            normalized_score = max(1, min(5, normalized_score))  # Ensure the score is within 1 to 5
+            normalized_score = max(1, min(5, normalized_score))
         else:
-            normalized_score = 3  # Neutral score if no sentiment words are found
+            normalized_score = 3
 
         return normalized_score
 
     def analyze_comments(self, comments):
-        """
-        Analyze a list of comments and return their sentiment scores.
-        """
         return [self.sentiment_score(comment) for comment in comments]
 
 

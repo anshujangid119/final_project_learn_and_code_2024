@@ -3,7 +3,7 @@ import json
 class DefaultCommandHandler:
     def __init__(self, client_socket):
         self.client_socket = client_socket
-
+# handle this
     def handle_commands(self):
         while True:
             try:

@@ -8,6 +8,7 @@ from handlers.employee_command_handler import EmployeeCommandHandler
 from handlers.default_command_handler import DefaultCommandHandler
 from databases.recommendation_database import RecommendationDatabase
 from databases.notification_database import Notification
+
 class ClientHandler(threading.Thread):
     def __init__(self, client_socket, client_address):
         super().__init__()
@@ -64,6 +65,6 @@ class ClientHandler(threading.Thread):
         elif user_role == 'chef':
             return ChefCommandHandler(self.client_socket, self.dish_db, self.recomm_db , self.notification_db)
         elif user_role == 'employee':
-            return EmployeeCommandHandler(self.client_socket, self.dish_db, self.notification_db)
+            return EmployeeCommandHandler(self.client_socket, self.dish_db, self.notification_db,self.user_db)
         else:
             return DefaultCommandHandler(self.client_socket)
